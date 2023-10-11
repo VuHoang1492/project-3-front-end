@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: '/', redirect: '/dashboard' },
+    { path: '/', redirect: '/login' },
     {
       path: '/',
       component: () => import('../layouts/default.vue'),
@@ -45,10 +45,9 @@ const router = createRouter({
         {
           path: 'login',
           component: () => import('../pages/login.vue'),
-        },
-        {
-          path: 'register',
-          component: () => import('../pages/register.vue'),
+          meta: {
+            title: 'Đăng nhập',
+          },
         },
         {
           path: '/:pathMatch(.*)*',
@@ -57,6 +56,10 @@ const router = createRouter({
       ],
     },
   ],
+})
+
+router.beforeEach((to, from) => {
+  document.title = to.meta?.title ?? 'Default Title'
 })
 
 export default router

@@ -1,5 +1,9 @@
+import { getTheme } from "@/services/storage"
+
+console.log(getTheme());
+
 const theme = {
-  defaultTheme: 'light',
+  defaultTheme: getTheme(),
   themes: {
     light: {
       dark: false,

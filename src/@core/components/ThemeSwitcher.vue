@@ -1,5 +1,6 @@
 <script setup>
 import { useTheme } from 'vuetify'
+import { setTheme } from "@/services/storage"
 
 const props = defineProps({
   themes: {
@@ -21,6 +22,7 @@ const {
 
 const changeTheme = () => {
   globalTheme.name.value = getNextThemeName()
+  setTheme(globalTheme.name.value)
 }
 
 // Update icon if theme is changed from other sources
@@ -32,11 +34,7 @@ watch(() => globalTheme.name.value, val => {
 <template>
   <IconBtn @click="changeTheme">
     <VIcon :icon="props.themes[currentThemeIndex].icon" />
-    <VTooltip
-      activator="parent"
-      open-delay="1000"
-      scroll-strategy="close"
-    >
+    <VTooltip activator="parent" open-delay="1000" scroll-strategy="close">
       <span class="text-capitalize">{{ currentThemeName }}</span>
     </VTooltip>
   </IconBtn>
