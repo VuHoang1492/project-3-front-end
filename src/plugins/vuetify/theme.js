@@ -1,6 +1,6 @@
 import { getTheme } from "@/services/storage"
 
-console.log(getTheme());
+
 
 const theme = {
   defaultTheme: getTheme(),

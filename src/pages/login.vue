@@ -37,7 +37,7 @@ const loginFailed = ref(false)
     <VCard class="auth-card pa-4 pt-7" min-width="400px">
       <VCardItem class="justify-center">
         <VCardTitle class="font-weight-semibold text-2xl text-uppercase">
-          Materio
+          MY STORE
         </VCardTitle>
       </VCardItem>
 

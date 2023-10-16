@@ -9,16 +9,28 @@ const router = createRouter({
       component: () => import('../layouts/default.vue'),
       children: [
         {
-          path: 'dashboard',
+          path: 'home',
           component: () => import('../pages/dashboard.vue'),
         },
         {
-          path: 'account-settings',
-          component: () => import('../pages/account-settings.vue'),
+          path: 'staff',
+          component: () => import('../pages/staff-list.vue'),
         },
         {
-          path: 'typography',
-          component: () => import('../pages/typography.vue'),
+          path: 'add-staff',
+          component: () => import('../pages/add-staff-page.vue'),
+        },
+        {
+          path: 'staff-profile/:id',
+          component: () => import('../pages/staff-profile-page.vue'),
+        },
+        {
+          path: 'roles',
+          component: () => import('../pages/roles-page.vue'),
+        },
+        {
+          path: 'roles/:id',
+          component: () => import('../pages/role-info-page.vue'),
         },
         {
           path: 'icons',

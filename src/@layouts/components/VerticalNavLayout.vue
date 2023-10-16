@@ -14,7 +14,7 @@ export default defineComponent({
     // ℹ️ This is alternative to below two commented watcher
     // We want to show overlay if overlay nav is visible and want to hide overlay if overlay is hidden and vice versa.
     syncRef(isOverlayNavActive, isLayoutOverlayVisible)
-    
+
     return () => {
       // 👉 Vertical nav
       const verticalNav = h(VerticalNav, { isOverlayNavActive: isOverlayNavActive.value, toggleIsOverlayNavActive }, {
@@ -97,7 +97,9 @@ export default defineComponent({
         .layout-navbar {
           @if variables.$layout-vertical-nav-navbar-is-contained {
             @include mixins.boxed-content;
-          } @else {
+          }
+
+          @else {
             .navbar-content-container {
               @include mixins.boxed-content;
             }
@@ -157,8 +159,10 @@ export default defineComponent({
       display: flex;
       overflow: hidden;
 
+
       .page-content-container {
         inline-size: 100%;
+        flex-grow: 1;
 
         > :first-child {
           max-block-size: 100%;

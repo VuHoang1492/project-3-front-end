@@ -1,21 +1,13 @@
 <script setup>
-import { useTheme } from 'vuetify'
-import upgradeBannerDark from '@images/pro/upgrade-banner-dark.png'
-import upgradeBannerLight from '@images/pro/upgrade-banner-light.png'
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
 
 // Components
-import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 
-const vuetifyTheme = useTheme()
 
-const upgradeBanner = computed(() => {
-  return vuetifyTheme.global.name.value === 'light' ? upgradeBannerLight : upgradeBannerDark
-})
 </script>
 
 <template>
@@ -42,19 +34,38 @@ const upgradeBanner = computed(() => {
 
     <template #vertical-nav-content>
       <VerticalNavLink :item="{
-        title: 'Dashboard',
+        title: 'Trang chủ',
         icon: 'mdi-home-outline',
-        to: '/dashboard',
-      }" />
-      <VerticalNavLink :item="{
-        title: 'Account Settings',
-        icon: 'mdi-account-cog-outline',
-        to: '/account-settings',
+        to: '/home',
       }" />
 
       <!-- 👉 Pages -->
       <VerticalNavSectionTitle :item="{
-        heading: 'Pages',
+        heading: 'Quản lý nhân sự',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Nhân viên',
+        icon: 'mdi-account-details',
+        to: '/staff',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Thêm nhân viên',
+        icon: 'mdi-account-plus',
+        to: '/add-staff',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Phân quyền',
+        icon: 'mdi-account-settings',
+        to: '/roles',
+      }" />
+      <VerticalNavSectionTitle :item="{
+        heading: 'Kho Hàng',
+      }" />
+      <VerticalNavSectionTitle :item="{
+        heading: 'Đơn hàng',
+      }" />
+      <VerticalNavSectionTitle :item="{
+        heading: 'Chăm sóc khách hàng',
       }" />
       <VerticalNavLink :item="{
         title: 'Login',
@@ -103,22 +114,8 @@ const upgradeBanner = computed(() => {
       }" />
     </template>
 
-    <template #after-vertical-nav-items>
-      <!-- 👉 illustration -->
-      <a href="https://themeselection.com/item/materio-vuetify-vuejs-admin-template" target="_blank"
-        rel="noopener noreferrer" style="margin-left: 7px;">
-        <img :src="upgradeBanner" alt="upgrade-banner" transition="scale-transition" class="upgrade-banner mx-auto"
-          style="max-width: 230px;">
-      </a>
-    </template>
-
     <!-- 👉 Pages -->
     <slot />
-
-    <!-- 👉 Footer -->
-    <template #footer>
-      <Footer />
-    </template>
   </VerticalNavLayout>
 </template>
 
