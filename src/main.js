@@ -10,11 +10,14 @@ import '@styles/styles.scss'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 
+
 loadFonts()
+
 
 
 // Create vue app
 const app = createApp(App)
+
 
 
 // Use plugins

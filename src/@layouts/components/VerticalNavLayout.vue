@@ -35,10 +35,10 @@ export default defineComponent({
       const main = h('main', { class: 'layout-page-content' }, h('div', { class: 'page-content-container' }, slots.default?.()))
 
 
-      // 👉 Footer
-      const footer = h('footer', { class: 'layout-footer' }, [
-        h('div', { class: 'footer-content-container' }, slots.footer?.()),
-      ])
+      // // 👉 Footer
+      // const footer = h('footer', { class: 'layout-footer' }, [
+      //   h('div', { class: 'footer-content-container' }, slots.footer?.()),
+      // ])
 
 
       // 👉 Overlay
@@ -58,7 +58,7 @@ export default defineComponent({
         h('div', { class: 'layout-content-wrapper' }, [
           navbar,
           main,
-          footer,
+          //footer,
         ]),
         layoutOverlay,
       ])
@@ -83,13 +83,27 @@ export default defineComponent({
     min-block-size: calc(var(--vh, 1vh) * 100);
     transition: padding-inline-start 0.2s ease-in-out;
     will-change: padding-inline-start;
+    position: relative;
   }
 
   .layout-navbar {
-    z-index: variables.$layout-vertical-nav-layout-navbar-z-index;
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10000;
+    width: 48px;
+    height: 48px;
+    padding: 0 !important;
+    margin: 16px 16px 0 0;
+
+
 
     .navbar-content-container {
       block-size: variables.$layout-vertical-nav-navbar-height;
+      height: 100%;
+      width: 100%;
+
     }
 
     @at-root {

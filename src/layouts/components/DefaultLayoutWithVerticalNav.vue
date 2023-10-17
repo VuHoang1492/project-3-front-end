@@ -5,39 +5,33 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
 
 // Components
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
-import UserProfile from '@/layouts/components/UserProfile.vue'
 
+
+const search = () => {
+  alert('search')
+}
 
 </script>
 
 <template>
   <VerticalNavLayout>
-    <!-- 👉 navbar -->
+
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
-        <!-- 👉 Vertical nav toggle in overlay mode -->
-        <IconBtn class="ms-n3 d-lg-none" @click="toggleVerticalOverlayNavActive(true)">
-          <VIcon icon="mdi-menu" />
+        <IconBtn class="ms-n3 d-lg-none btn-sider" @click="toggleVerticalOverlayNavActive(true)">
+          <VIcon size="32" icon="mdi-menu " />
         </IconBtn>
-
-        <VSpacer />
-
-        <IconBtn class="me-2">
-          <VIcon icon="mdi-bell-outline" />
-        </IconBtn>
-
-        <NavbarThemeSwitcher class="me-2" />
-
-        <UserProfile />
       </div>
     </template>
 
     <template #vertical-nav-content>
+      <NavbarThemeSwitcher class="me-2" />
       <VerticalNavLink :item="{
         title: 'Trang chủ',
         icon: 'mdi-home-outline',
         to: '/home',
       }" />
+
 
       <!-- 👉 Pages -->
       <VerticalNavSectionTitle :item="{
@@ -114,7 +108,6 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
       }" />
     </template>
 
-    <!-- 👉 Pages -->
     <slot />
   </VerticalNavLayout>
 </template>
@@ -127,5 +120,14 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
   line-height: 1.3125rem;
   padding-block: 0.125rem;
   padding-inline: 0.25rem;
+}
+
+.btn-sider {
+  height: 80%;
+  width: 80%;
+  margin: auto !important;
+  background-color: #fff;
+  border-radius: 8px;
+  opacity: .8;
 }
 </style>

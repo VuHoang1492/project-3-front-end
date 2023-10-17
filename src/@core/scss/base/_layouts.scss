@@ -18,14 +18,14 @@
 .layout-wrapper.layout-nav-type-vertical {
   &.layout-content-height-fixed {
     .page-content-container {
-      > .v-layout:first-child {
+      >.v-layout:first-child {
         overflow: hidden;
         min-block-size: 100%;
 
-        > .v-main {
+        >.v-main {
           // overflow-y: auto;
 
-          .v-main__wrap > :first-child {
+          .v-main__wrap> :first-child {
             block-size: 100%;
             overflow-y: auto;
           }
@@ -38,14 +38,16 @@
 // ℹ️ Let div/v-layout take full height. E.g. Email App
 .layout-wrapper.layout-nav-type-horizontal {
   &.layout-content-height-fixed {
-    > .layout-page-content {
+    >.layout-page-content {
       display: flex;
+
     }
   }
 }
 
 // 👉 Floating navbar styles
-@if variables.$vertical-nav-navbar-style == "floating" {
+@if variables.$vertical-nav-navbar-style =="floating" {
+
   // ℹ️ Add spacing above navbar if navbar is floating (was in %layout-navbar-sticky placeholder)
   .layout-wrapper.layout-nav-type-vertical.layout-navbar-sticky {
     .layout-navbar {
