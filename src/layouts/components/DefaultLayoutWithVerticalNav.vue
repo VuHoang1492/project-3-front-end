@@ -3,13 +3,9 @@ import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
 
-// Components
-import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 
 
-const search = () => {
-  alert('search')
-}
+
 
 </script>
 
@@ -25,78 +21,81 @@ const search = () => {
     </template>
 
     <template #vertical-nav-content>
-      <NavbarThemeSwitcher class="me-2" />
-      <VerticalNavLink :item="{
+
+      <!-- <VerticalNavLink :item="{
         title: 'Trang chủ',
         icon: 'mdi-home-outline',
         to: '/home',
-      }" />
+      }" /> -->
 
 
       <!-- 👉 Pages -->
       <VerticalNavSectionTitle :item="{
-        heading: 'Quản lý nhân sự',
+        heading: 'Tài Khoản',
       }" />
       <VerticalNavLink :item="{
-        title: 'Nhân viên',
-        icon: 'mdi-account-details',
-        to: '/staff',
-      }" />
-      <VerticalNavLink :item="{
-        title: 'Thêm nhân viên',
-        icon: 'mdi-account-plus',
-        to: '/add-staff',
-      }" />
-      <VerticalNavLink :item="{
-        title: 'Phân quyền',
-        icon: 'mdi-account-settings',
-        to: '/roles',
-      }" />
-      <VerticalNavSectionTitle :item="{
-        heading: 'Kho Hàng',
-      }" />
-      <VerticalNavSectionTitle :item="{
-        heading: 'Đơn hàng',
-      }" />
-      <VerticalNavSectionTitle :item="{
-        heading: 'Chăm sóc khách hàng',
-      }" />
-      <VerticalNavLink :item="{
-        title: 'Login',
+        title: 'Đăng nhập',
         icon: 'mdi-login',
         to: '/login',
       }" />
       <VerticalNavLink :item="{
-        title: 'Register',
-        icon: 'mdi-account-plus-outline',
+        title: 'Example@gmail.com',
+        icon: 'mdi-account',
+        to: '/account',
+      }" />
+
+      <VerticalNavLink :item="{
+        title: 'Nhà hàng theo dõi',
+        icon: 'mdi-book-heart-outline',
+        to: '/profile',
+      }" />
+
+      <VerticalNavLink :item="{
+        title: 'Nâng cấp ',
+        icon: 'mdi-arrow-up-bold-outline',
+        to: '/profile',
+      }" />
+
+      <VerticalNavSectionTitle :item="{
+        heading: 'Quản lý cửa hàng',
+      }" />
+
+      <VerticalNavLink :item="{
+        title: 'Danh sách cửa hàng',
+        icon: 'mdi-format-list-bulleted-square',
+        to: '/login',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Thêm cửa hàng',
+        icon: 'mdi-store-plus',
         to: '/register',
       }" />
       <VerticalNavLink :item="{
-        title: 'Error',
-        icon: 'mdi-information-outline',
+        title: 'Đăng Post',
+        icon: 'mdi-tray-arrow-up',
         to: '/no-existence',
       }" />
 
       <!-- 👉 User Interface -->
       <VerticalNavSectionTitle :item="{
-        heading: 'User Interface',
+        heading: 'Admin',
       }" />
       <VerticalNavLink :item="{
-        title: 'Typography',
-        icon: 'mdi-alpha-t-box-outline',
+        title: 'Khóa người dùng',
+        icon: 'mdi-account-cancel',
         to: '/typography',
       }" />
       <VerticalNavLink :item="{
-        title: 'Icons',
+        title: 'Xét duyệt nâng cấp',
         icon: 'mdi-eye-outline',
         to: '/icons',
       }" />
       <VerticalNavLink :item="{
-        title: 'Cards',
+        title: 'Xét duyệt nhà hàng  ',
         icon: 'mdi-credit-card-outline',
         to: '/cards',
       }" />
-      <VerticalNavLink :item="{
+      <!-- <VerticalNavLink :item="{
         title: 'Tables',
         icon: 'mdi-table',
         to: '/tables',
@@ -105,7 +104,7 @@ const search = () => {
         title: 'Form Layouts',
         icon: 'mdi-form-select',
         to: '/form-layouts',
-      }" />
+      }" /> -->
     </template>
 
     <slot />

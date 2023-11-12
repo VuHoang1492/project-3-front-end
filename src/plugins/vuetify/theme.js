@@ -8,7 +8,7 @@ const theme = {
     light: {
       dark: false,
       colors: {
-        'primary': '#9155FD',
+        'primary': '#1f1f1f',
         'secondary': '#8A8D93',
         'on-secondary': '#fff',
         'success': '#56CA00',

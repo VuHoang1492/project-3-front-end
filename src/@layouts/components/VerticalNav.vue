@@ -1,6 +1,8 @@
 <script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useDisplay } from 'vuetify'
+import { RouterLink } from 'vue-router';
+import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue';
 
 const props = defineProps({
   tag: {
@@ -51,12 +53,16 @@ const handleNavScroll = evt => {
         <div class="app-logo d-flex align-center gap-x-3 app-title-wrapper">
           <!--logo-->
 
-          <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
-            My Store
-          </h1>
+          <RouterLink to="/home">
+            <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
+              MAP FOOD
+            </h1>
+          </RouterLink>
         </div>
       </slot>
+      <NavbarThemeSwitcher class="me-2" />
     </div>
+
     <slot name="before-nav-items">
       <div class="vertical-nav-items-shadow" />
     </slot>
@@ -90,6 +96,7 @@ const handleNavScroll = evt => {
   .nav-header {
     display: flex;
     align-items: center;
+    flex-direction: row;
 
     .header-action {
       cursor: pointer;

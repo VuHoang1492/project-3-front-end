@@ -9,7 +9,7 @@ import '@layouts/styles/index.scss'
 import '@styles/styles.scss'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
-
+import vue3StarRatings from "vue3-star-ratings";
 
 loadFonts()
 
@@ -18,6 +18,7 @@ loadFonts()
 // Create vue app
 const app = createApp(App)
 
+app.component("vue3-star-ratings", vue3StarRatings);
 
 
 // Use plugins

@@ -10,7 +10,7 @@ const router = useRouter()
 
 
 const form = ref({
-  account: '',
+  email: '',
   password: '',
 })
 
@@ -22,8 +22,12 @@ const authThemeMask = computed(() => {
 
 const login = () => {
   console.log(form._rawValue);
-  loginFailed.value = true;
-  //router.push('/dashboard')
+  // loginFailed.value = true;
+  router.push('/home')
+}
+
+const navigateRegister = () => {
+  router.push('/register')
 }
 
 const isPasswordVisible = ref(true)
@@ -37,13 +41,16 @@ const loginFailed = ref(false)
     <VCard class="auth-card pa-4 pt-7" min-width="400px">
       <VCardItem class="justify-center">
         <VCardTitle class="font-weight-semibold text-2xl text-uppercase">
-          MY STORE
+          MAP FOOD
         </VCardTitle>
       </VCardItem>
 
-      <VCardText class="pt-2 ">
-        <p class="mb-4 text-center">
-          Sản phẩm dành cho nhân viên
+      <VCardText class="pt-2">
+        <h5 class="text-h6 font-weight-semibold mb-1">
+          Bắt đầu khám phá 🚀
+        </h5>
+        <p class="mb-0">
+          Đăng nhập ngay
         </p>
       </VCardText>
 
@@ -52,7 +59,7 @@ const loginFailed = ref(false)
           <VRow>
             <!-- email -->
             <VCol cols="12">
-              <VTextField v-model="form.account" :error="loginFailed" @change="loginFailed = false" label="Mã nhân viên"
+              <VTextField v-model="form.email" :error="loginFailed" @change="loginFailed = false" label="Email"
                 type="email" :append-inner-icon="loginFailed ? 'mdi-close-outline' : ''" />
             </VCol>
 
@@ -67,7 +74,11 @@ const loginFailed = ref(false)
 
               <!-- login button -->
               <VBtn class="mt-16" block @click="login">
-                Login
+                Đăng nhập
+              </VBtn>
+
+              <VBtn class="mt-4" block @click="navigateRegister">
+                Đăng ký tài khoản
               </VBtn>
             </VCol>
           </VRow>

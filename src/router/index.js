@@ -11,10 +11,13 @@ const router = createRouter({
         {
           path: 'home',
           component: () => import('../pages/map.vue'),
+          meta: {
+            title: 'Trang Chủ',
+          },
         },
         {
-          path: 'staff',
-          component: () => import('../pages/staff-list.vue'),
+          path: 'account',
+          component: () => import('../pages/profile.vue'),
         },
         {
           path: 'add-staff',
@@ -62,6 +65,13 @@ const router = createRouter({
           },
         },
         {
+          path: 'register',
+          component: () => import('../pages/register.vue'),
+          meta: {
+            title: 'Đăng ký',
+          },
+        },
+        {
           path: '/:pathMatch(.*)*',
           component: () => import('../pages/[...all].vue'),
         },
@@ -71,7 +81,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from) => {
-  document.title = to.meta?.title ?? 'Default Title'
+
+  document.title = to.meta?.title ?? 'Default   '
 })
 
 export default router
