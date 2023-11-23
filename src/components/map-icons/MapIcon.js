@@ -1,5 +1,5 @@
 export const UserPositionSymbol = L.icon({
-    iconUrl: 'icons/user-position.png',
+    iconUrl: '/icons/user-position.png',
     // shadowUrl: 'leaf-shadow.png',
     iconSize: [48, 48], // size of the icon
     // shadowSize: [50, 64], // size of the shadow
@@ -10,7 +10,7 @@ export const UserPositionSymbol = L.icon({
 
 
 export const RestaurantSymbol = L.icon({
-    iconUrl: 'icons/restaurant.png',
+    iconUrl: '/icons/restaurant.png',
     // shadowUrl: 'leaf-shadow.png',
     iconSize: [48, 48], // size of the icon
     // shadowSize: [50, 64], // size of the shadow
@@ -20,7 +20,7 @@ export const RestaurantSymbol = L.icon({
 });
 
 export const SearchSymbol = L.icon({
-    iconUrl: 'icons/search-location.png',
+    iconUrl: '/icons/search-location.png',
     // shadowUrl: 'leaf-shadow.png',
     iconSize: [48, 48], // size of the icon
     // shadowSize: [50, 64], // size of the shadow

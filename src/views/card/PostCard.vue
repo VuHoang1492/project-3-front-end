@@ -1,6 +1,10 @@
 <script setup>
 import { onUnmounted } from 'vue';
 import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+
+const router = useRouter()
 
 const overlay = ref(false)
 const imageInOverlay = ref('')
@@ -28,7 +32,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <v-card class="post-card" variant="tonal">
+    <v-card class="post-card pt-4 pb-4 pl-2 pr-2 mb-8" variant="tonal">
         <v-card-title width="100%">
             Title
         </v-card-title>
@@ -43,6 +47,12 @@ onUnmounted(() => {
             <v-img v-on:click="handleClickImage" cover
                 src="https://elitetour.com.vn/files/images/Blogs/cafehl.jpeg"></v-img>
         </v-card-item>
+        <div class="d-flex flex-row mt-8">
+            <VBtn prepend-icon="mdi-pencil-box-multiple-outline" class="w-50" variant="text"
+                @click="() => router.push('/post/:postId')">Chỉnh sửa
+            </VBtn>
+            <VBtn prepend-icon="mdi-delete-outline" class="w-50" variant="text">Xóa</VBtn>
+        </div>
     </v-card>
     <v-overlay v-model="overlay" class="align-center justify-center">
         <v-img :src="imageInOverlay" class="img-overlay"></v-img>
@@ -52,8 +62,15 @@ onUnmounted(() => {
 
 <style lang="scss" >
 .post-card {
-    margin: 32px 0;
-    padding: 32px 8px;
+
+    .report-btn {
+        height: 32px;
+        min-width: 32px !important;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        padding: 0;
+    }
 
     .media-files {
         width: 100%;

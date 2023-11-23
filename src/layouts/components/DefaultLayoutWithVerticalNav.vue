@@ -47,13 +47,13 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
       <VerticalNavLink :item="{
         title: 'Nhà hàng theo dõi',
         icon: 'mdi-book-heart-outline',
-        to: '/profile',
+        to: '/favorite',
       }" />
 
       <VerticalNavLink :item="{
         title: 'Nâng cấp ',
         icon: 'mdi-arrow-up-bold-outline',
-        to: '/profile',
+        to: '/upgrade',
       }" />
 
       <VerticalNavSectionTitle :item="{
@@ -63,17 +63,13 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
       <VerticalNavLink :item="{
         title: 'Danh sách cửa hàng',
         icon: 'mdi-format-list-bulleted-square',
-        to: '/login',
+        to: '/manage-restaurant',
       }" />
+
       <VerticalNavLink :item="{
-        title: 'Thêm cửa hàng',
-        icon: 'mdi-store-plus',
-        to: '/register',
-      }" />
-      <VerticalNavLink :item="{
-        title: 'Đăng Post',
-        icon: 'mdi-tray-arrow-up',
-        to: '/no-existence',
+        title: ' Post',
+        icon: 'mdi-post',
+        to: '/post',
       }" />
 
       <!-- 👉 User Interface -->
@@ -90,21 +86,6 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
         icon: 'mdi-eye-outline',
         to: '/icons',
       }" />
-      <VerticalNavLink :item="{
-        title: 'Xét duyệt nhà hàng  ',
-        icon: 'mdi-credit-card-outline',
-        to: '/cards',
-      }" />
-      <!-- <VerticalNavLink :item="{
-        title: 'Tables',
-        icon: 'mdi-table',
-        to: '/tables',
-      }" />
-      <VerticalNavLink :item="{
-        title: 'Form Layouts',
-        icon: 'mdi-form-select',
-        to: '/form-layouts',
-      }" /> -->
     </template>
 
     <slot />

@@ -1,148 +1,113 @@
-<script setup>
+<script setup >
 import MapLeaf from '../components/MapLeaf.vue'
-import RestaurantCard from '@/views/restaurant/RestaurantCard.vue'
+import RestaurantCardMap from '@/views/card/RestaurantCardMap.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { watch, reactive } from 'vue';
+import { reactive } from 'vue';
 import { getRestaurantById, getRestaurantNearby } from '@/services/axios/api/api'
-import { useGeolocationStore } from '@/stores/geolocation';
+
 
 const route = useRoute()
 const router = useRouter()
 
 const restaurantData = reactive({ restaurant: null, show: false })
-const currentLocationUser = useGeolocationStore() // lat,lng hiện tại của user
 
 
-
-const onClickMap = (latlng) => {
-  //console.log('click map', latlng);
-  router.push({ path: '/home', query: { lat: latlng.latlng.lat, lng: latlng.latlng.lng } })
-
+const onClickMap = (e) => {
+  getRestaurantNearby(e.latlng.lat, e.latlng.lng).then(res => {
+    restaurant_nearby.splice(0, restaurant_nearby.length)
+    restaurant_nearby.push(...res)
+  })
+  router.push({ path: route.path, query: { lat: e.latlng.lat, lng: e.latlng.lng } })
 }
+
 
 const onClickRestaurant = (item) => {
-  router.push({ path: '/home', query: { ...route.query, restaurantId: item.id } })
-  _click_map = () => { }
+  restaurantData.restaurant = item
+  restaurantData.show = true
+  allow_click_map = false
+  _find_round = false
+  router.push({ path: route.path, query: { ...route.query, restaurantId: item.id } })
 }
-
-
-
 
 const onClickHint = (hint) => {
-  console.log(hint);
-  router.push({ path: '/home', query: { lat: hint.lat, lng: hint.lon, qs: hint.display_name, } })
+  getRestaurantNearby(hint.lat, hint.lon).then(res => {
+    restaurant_nearby.splice(0, restaurant_nearby.length)
+    restaurant_nearby.push(...res)
+  })
+  router.push({ path: route.path, query: { lat: hint.lat, lng: hint.lon, qs: hint.display_name, } })
 }
+
 
 const closeRestaurantCard = () => {
   restaurantData.show = false;
-  router.push({ path: '/home', query: { lat: route.query.lat, lng: route.query.lng } })
-  _click_map = onClickMap
+
+  router.push({ path: route.path, query: { ...route.query, restaurantId: undefined } })
+  allow_click_map = true
+  _find_round = findAround
+}
+
+const findAround = (user_lat, user_lng) => {
+  getRestaurantNearby(user_lat, user_lng).then(res => {
+    restaurant_nearby.splice(0, restaurant_nearby.length)
+    restaurant_nearby.push(...res)
+  })
+  router.push({ path: route.path, query: null })
+}
+
+const onDirect = () => {
+  destination.name = restaurantData.restaurant.name
+  destination.lat = restaurantData.restaurant.lat
+  destination.lng = restaurantData.restaurant.lon
+  restaurantData.show = false
+  router.push({ path: route.path, query: { ...route.query, direct: true } })
+}
+
+const offDirect = () => {
+  destination.name = null
+  destination.lat = null
+  destination.lng = null
+  restaurantData.show = true
+  router.push({ path: route.path, query: { ...route.query, direct: undefined } })
 }
 
 
-const closeDirectCard = () => {
-  _click_map = onClickMap
-  destination_restaurant.name = null
-  destination_restaurant.lat = null
-  destination_restaurant.lng = null
-  router.push({ path: '/home', query: { lat: route.query.lat, lng: route.query.lng, restaurantId: restaurantData.restaurant.id } })
-}
+let allow_click_map = true
+let restaurant_nearby = reactive([])
+let init_point = reactive({ lat: null, lng: null })
+let _find_round = findAround
 
-
-const choose_position = reactive({
-  lat: route.query.lat ? route.query.lat : null,
-  lng: route.query.lng ? route.query.lng : null,
-})
-let destination_restaurant = reactive({
+let destination = reactive({
   name: null,
   lat: null,
   lng: null
 })
 
-let restaurant_nearby = reactive([])
-let _click_map = onClickMap
-let _click_restaurant = onClickRestaurant
-let _click_hint = onClickHint
-let _turn_off_direct = closeDirectCard
 
-
-
-if (choose_position.lat != null && choose_position.lng != null) {
-  getRestaurantNearby(choose_position.lat, choose_position.lng).then(res => {
-    restaurant_nearby.splice(0, restaurant_nearby.length)
-    restaurant_nearby.push(...res)
-
-  })
-} else if (currentLocationUser.accept) {
-  getRestaurantNearby(currentLocationUser.lat, currentLocationUser.lng).then(res => {
-    restaurant_nearby.splice(0, restaurant_nearby.length)
-    restaurant_nearby.push(...res)
-  })
+if (route.query.lat && route.query.lng) {
+  init_point.lat = route.query.lat
+  init_point.lng = route.query.lng
+  onClickMap({ latlng: { lat: route.query.lat, lng: route.query.lng } })
 }
+
 
 if (route.query.restaurantId) {
   getRestaurantById(route.query.restaurantId).then(res => {
-    restaurantData.restaurant = res
-    restaurantData.show = true
+    onClickRestaurant(res)
+    restaurant_nearby.push(res)
+
+
     if (route.query.direct) {
+      console.log(restaurantData);
+      destination.name = restaurantData.restaurant.name
+      destination.lat = restaurantData.restaurant.lat
+      destination.lng = restaurantData.restaurant.lon
       restaurantData.show = false
-      destination_restaurant.name = restaurantData.restaurant.name
-      destination_restaurant.lat = restaurantData.restaurant.lat
-      destination_restaurant.lng = restaurantData.restaurant.lon
     }
+
   }).catch(err => {
     console.log(err);
   })
-
 }
-
-
-
-
-
-
-
-watch(route, () => {
-  if (route.query.restaurantId) {
-    if (route.query.direct) {
-      restaurantData.show = false
-      destination_restaurant.name = restaurantData.restaurant.name
-      destination_restaurant.lat = restaurantData.restaurant.lat
-      destination_restaurant.lng = restaurantData.restaurant.lon
-      _click_map = () => { }
-    } else
-      getRestaurantById(route.query.restaurantId).then(res => {
-        restaurantData.restaurant = res
-        restaurantData.show = true
-        _click_map = () => { }
-      }).catch(err => {
-        console.log(err);
-      })
-  }
-
-
-
-
-
-  if (route.query.lat && route.query.lng) {
-    if (route.query.lat !== choose_position.lat) {
-      if (route.query.lng !== choose_position.lng) {
-
-        choose_position.lat = route.query.lat
-        choose_position.lng = route.query.lng
-
-        getRestaurantNearby(choose_position.lat, choose_position.lng).then(res => {
-          restaurant_nearby.splice(0, restaurant_nearby.length)
-          restaurant_nearby.push(...res)
-        })
-      }
-    }
-  }
-})
-
-
-
-
 
 
 
@@ -152,16 +117,16 @@ watch(route, () => {
 <template>
   <VRow class="row">
     <div class="map-view">
-      <MapLeaf :_click_map="_click_map" :_click_hint="_click_hint" :_click_restaurant="_click_restaurant"
-        :user_position="currentLocationUser" :_turn_off_direct="_turn_off_direct" :choose_position="choose_position"
-        :restaurant_nearby="restaurant_nearby" :destination_restaurant="destination_restaurant">
+      <MapLeaf map_type="restaurant" :item_list="restaurant_nearby" :allow_click_map="allow_click_map"
+        :init_point="init_point" :destination="destination" :_click_map="onClickMap" :_click_hint="onClickHint"
+        :_click_item="onClickRestaurant" :_turn_off_direct="offDirect" :_find_round="_find_round">
       </MapLeaf>
     </div>
     <div v-if="restaurantData.show" class="restaurant-news">
       <v-card class="restaurant-card">
         <VBtn v-on:click="() => closeRestaurantCard()" variant="text" color="#1f1f1f" icon="mdi-close-thick">
         </VBtn>
-        <RestaurantCard :restaurant="restaurantData.restaurant"></RestaurantCard>
+        <RestaurantCardMap :restaurant="restaurantData.restaurant" @onDirect="onDirect"></RestaurantCardMap>
       </v-card>
     </div>
   </VRow>

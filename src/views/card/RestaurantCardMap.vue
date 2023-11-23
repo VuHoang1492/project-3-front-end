@@ -18,15 +18,6 @@ const setFavoriteIcon = computed(() => {
     return favorite.value ? 'mdi-heart-outline' : 'mdi-plus'
 })
 
-const directRestaurant = () => {
-    router.push({
-        path: route.path,
-        query: {
-            ...route.query,
-            direct: true
-        }
-    })
-}
 
 
 </script>
@@ -45,7 +36,7 @@ const directRestaurant = () => {
             <v-btn class="w-30 mb-2" variant="text">Đánh giá
                 <v-icon end icon="mdi-pencil"></v-icon>
             </v-btn>
-            <v-btn class="w-30 mb-2" variant="text" v-on:click="() => directRestaurant()">Chỉ đường
+            <v-btn class="w-30 mb-2" variant="text" @click="$emit('onDirect')">Chỉ đường
                 <v-icon end icon="mdi-directions"></v-icon>
             </v-btn>
         </div>

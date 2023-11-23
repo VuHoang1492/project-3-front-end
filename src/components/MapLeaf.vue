@@ -7,55 +7,82 @@ import axios from 'axios'
 import { onMounted, computed, ref, watch, reactive } from 'vue';
 import { UserPositionSymbol, RestaurantSymbol, SearchSymbol } from './map-icons/MapIcon'
 import { getLocationByLatlng } from '@/services/axios/map/MapAxiosApi'
+import { useGeolocationStore } from '@/stores/geolocation';
 
 
 const props = defineProps({
-    user_position: Object,
-    choose_position: Object,
-    destination_restaurant: Object,
-    restaurant_nearby: Array,
-    _click_map: Function,
-    _click_hint: Function,
-    _click_restaurant: Function,
-    _click_geocoder_button: Function,
-    _turn_off_direct: Function
+    map_type: {
+        type: String,
+        default: ""
+    },
+    destination: {
+        type: Object,
+        default: {
+            lat: null,
+            lng: null
+        }
+    },
+    item_list: {
+        type: Array,
+        default: []
+    },
+    init_point: {
+        type: Object,
+        default: {
+            lat: null,
+            lng: null
+        }
+    },
+    allow_click_map: {
+        type: Boolean,
+        default: true
+    },
+    _click_map: {
+        type: Function,
+        default: () => { }
+    },
+    _click_hint: {
+        type: Function,
+        default: () => { }
+    },
+    _click_item: {
+        type: Function,
+        default: () => { }
+    },
+    _click_geocoder_button: {
+        type: Function,
+        default: () => { }
+    },
+    _turn_off_direct: {
+        type: Function,
+        default: () => { }
+    },
+    _find_round: {
+        type: [Function, Boolean],
+        default: () => { }
+    }
 })
 
 
 let map = null // map
 let marker = null // marker choose position
+
+
 let searchTimeOut = null // time when search
-const dataHint = ref(null) // Hint when search
+const dataHint = reactive([]) // Hint when search
 const loading = ref(false) // loading hint
+
+
 let currentLocationUserMarker = null // marker user location
-const restaurantMarker = reactive([])
+const user_position = useGeolocationStore() // lat,lng hiện tại của user
+
+
+const itemMaker = reactive([])
 let controlDirect = null
 
 
-
-
-watch(props.choose_position, () => {
-    console.log(props.choose_position);
-    getLocationByLatlng(props.choose_position.lat, props.choose_position.lng)
-        .then(res => {
-            if (marker) map.removeLayer(marker)
-            marker = new L.marker([res.data.lat, res.data.lon], {
-                icon: SearchSymbol
-            })
-
-            map.addLayer(marker).setView(marker.getLatLng(), 16);
-            marker.bindTooltip(`<b>${res.data.address.country}</b><br />${res.data.display_name}`);
-            dataHint.value = null
-
-
-        }).catch(err => {
-            console.log("ERR >>> ", err);
-        })
-
-})
-
-watch(props.user_position, () => {
-    getLocationByLatlng(props.user_position.latitude, props.user_position.longitude)
+watch(user_position, () => {
+    getLocationByLatlng(user_position.latitude, user_position.longitude)
         .then(res => {
             if (currentLocationUserMarker) map.removeLayer(currentLocationUserMarker)
             currentLocationUserMarker = new L.marker([res.data.lat, res.data.lon], {
@@ -66,13 +93,13 @@ watch(props.user_position, () => {
             currentLocationUserMarker.bindTooltip(`<b>Vị trí của bạn</b><br />${res.data.display_name}`)
 
 
-            if (props.destination_restaurant.lat != null && props.destination_restaurant.lng != null) {
+            if (props.destination.lat != null && props.destination.lng != null) {
                 map.removeControl(controlDirect)
                 controlDirect = null
                 controlDirect = L.Routing.control({
                     waypoints: [
-                        L.latLng(props.user_position.latitude, props.user_position.longitude),
-                        L.latLng(props.destination_restaurant.lat, props.destination_restaurant.lng)
+                        L.latLng(user_position.latitude, user_position.longitude),
+                        L.latLng(props.destination.lat, props.destination.lng)
                     ],
                     draggableWaypoints: false,
                     addWaypoints: false,
@@ -102,34 +129,34 @@ watch(props.user_position, () => {
         })
 })
 
-
-watch(props.restaurant_nearby, () => {
-    //  console.log(props.restaurant_nearby);
-    restaurantMarker.forEach((item) => {
+watch(props.item_list, () => {
+    itemMaker.forEach((item) => {
         map.removeLayer(item)
     })
-    restaurantMarker.splice(0, restaurantMarker.length)
+    itemMaker.splice(0, itemMaker.length)
 
-    props.restaurant_nearby.forEach(item => {
+    props.item_list.forEach(item => {
         let m = new L.marker([item.lat, item.lon], {
             icon: RestaurantSymbol
         })
-        m.on('click', () => props._click_restaurant(item))
-        restaurantMarker.push(m)
+        m.on('click', () => {
+            props._click_item(item)
+            map.setView([item.lat, item.lon], 16)
+        })
+        itemMaker.push(m)
         map.addLayer(m);
         m.bindTooltip(`<b>${item.name}</b>`);
     })
 
 }, { deep: true })
 
+watch(props.destination, () => {
 
-
-watch(props.destination_restaurant, () => {
-    if (props.destination_restaurant.lat != null && props.destination_restaurant.lng != null) {
+    if (props.destination.lat != null && props.destination.lng != null) {
         controlDirect = L.Routing.control({
             waypoints: [
-                L.latLng(props.user_position.latitude, props.user_position.longitude),
-                L.latLng(props.destination_restaurant.lat, props.destination_restaurant.lng)
+                L.latLng(user_position.latitude, user_position.longitude),
+                L.latLng(props.destination.lat, props.destination.lng)
             ],
             draggableWaypoints: false,
             addWaypoints: false,
@@ -157,6 +184,9 @@ watch(props.destination_restaurant, () => {
 }, { deep: true })
 
 
+
+
+
 //Change icon in input
 const getIcon = computed(() => {
     return loading.value ? " mdi-access-point" : "mdi-magnify"
@@ -164,7 +194,7 @@ const getIcon = computed(() => {
 
 
 const disableGeoLocationBtn = computed(() => {
-    return !props.user_position.accept
+    return !user_position.accept
 })
 
 //get hint
@@ -172,16 +202,16 @@ const handleSearch = (e) => {
     loading.value = true
     clearTimeout(searchTimeOut)
     if (e.target.value === "") {
-        dataHint.value = null
+        dataHint.splice(0, dataHint.length)
         loading.value = false
         return
     }
     searchTimeOut = setTimeout(() => {
         axios.get(`https://nominatim.openstreetmap.org/search?q=${e.target.value}&limit=5&format=json&addressdetails=1`)
             .then(res => {
-                dataHint.value = res.data
+                dataHint.splice(0, dataHint.length)
+                dataHint.push(...res.data)
                 loading.value = false
-
             }).catch(err => {
                 console.log("ERR >>> ", err);
                 loading.value = false
@@ -203,11 +233,29 @@ const initMap = () => {
     layer.addTo(map);
     map.zoomControl.setPosition('bottomright');
 
-    map.on('click', (latlng) => props._click_map(latlng))
+    map.on('click', (e) => {
+        if (props.allow_click_map) {
+            getLocationByLatlng(e.latlng.lat, e.latlng.lng)
+                .then(res => {
+                    if (marker) map.removeLayer(marker)
+                    marker = new L.marker([res.data.lat, res.data.lon], {
+                        icon: SearchSymbol
+                    })
+
+                    map.addLayer(marker).setView(marker.getLatLng(), 16);
+                    marker.bindTooltip(`<b>${res.data.address.country}</b><br />${res.data.display_name}`);
+
+
+                }).catch(err => {
+                    console.log("ERR >>> ", err);
+                })
+            props._click_map(e)
+        }
+    })
 
     //init current user location
-    if (props.user_position.accept) {
-        getLocationByLatlng(props.user_position.latitude, props.user_position.longitude)
+    if (user_position.accept) {
+        getLocationByLatlng(user_position.latitude, user_position.longitude)
             .then(res => {
                 currentLocationUserMarker = new L.marker([res.data.lat, res.data.lon], {
                     icon: UserPositionSymbol
@@ -222,17 +270,17 @@ const initMap = () => {
             })
     }
 
-    if (props.choose_position.lat != null && props.choose_position.lng != null) {
-        getLocationByLatlng(props.choose_position.lat, props.choose_position.lng)
+    if (props.init_point.lat != null && props.init_point.lng != null) {
+        getLocationByLatlng(props.init_point.lat, props.init_point.lng)
             .then(res => {
-                if (marker) map.removeLayer(marker)
+                console.log(res);
                 marker = new L.marker([res.data.lat, res.data.lon], {
                     icon: SearchSymbol
                 })
 
                 map.addLayer(marker).setView(marker.getLatLng(), 16);
                 marker.bindTooltip(`<b>${res.data.address.country}</b><br />${res.data.display_name}`);
-                dataHint.value = null
+
 
             }).catch(err => {
                 console.log("ERR >>> ", err);
@@ -246,44 +294,66 @@ onMounted(() => {
 })
 
 
-
-
 </script>
 
 <template>
     <div class="map-wrap">
-        <div class="map-geocoder">
-            <VBtn class="navigate-btn" icon="mdi-crosshairs-gps" :disabled="disableGeoLocationBtn" v-on:click="() => {
-                map.setView(currentLocationUserMarker.getLatLng(), 16)
-            }"></VBtn>
-            <VTextField ref="input" placeholder="Tìm kiếm" @keyup="handleSearch" class="input-search"
-                :append-inner-icon='getIcon' color="#1f1f1f">
-            </VTextField>
-            <VList class="hint-list" v-if="dataHint">
-                <VListItem class="hint-item" v-for="(item, index) in dataHint">
-                    <div :key="index" v-on:click="() => {
-                        props._click_hint(item)
-                        dataHint.value = null
-                    }">{{ item.display_name }}
-                    </div>
-                </VListItem>
-            </VList>
-            <VCard class="d-flex justify-space-between align-center name-card"
-                v-if="props.destination_restaurant.name != null">
-                <VCardText>
-                    <template v-slot:default>
-                        {{ props.destination_restaurant.name }}
-                    </template>
-                </VCardText>
-
-                <VBtn color="orange-lighten-2" variant="text" icon="mdi-close" v-on:click="() => {
-                    map.removeControl(controlDirect)
-                    controlDirect = null
-                    props._turn_off_direct()
-                }">
+        <div class="tools mt-8 pl-4">
+            <div class="action-tool d-flex  flex-column align-start  flex-md-row" v-if="props.map_type === 'restaurant'">
+                <VBtn class="mr-4 mb-4 action-tool-item" color="orange-lighten-2"
+                    :disabled="!user_position.accept || _find_round == false" v-on:click="() => {
+                        if (marker) map.removeLayer(marker)
+                        marker = null
+                        map.setView(currentLocationUserMarker.getLatLng(), 16)
+                        props._find_round(user_position.latitude, user_position.longitude)
+                    }">Tìm kiếm quanh bạn
                 </VBtn>
-            </VCard>
 
+                <VCard class="d-flex justify-space-between align-center pa-0 mb-4 action-tool-item"
+                    v-if="props.destination.name != null">
+                    <VCardText>
+                        <template v-slot:default>
+                            {{ props.destination.name }}
+                        </template>
+                    </VCardText>
+
+                    <VBtn color="orange-lighten-2" variant="text" icon="mdi-close" v-on:click="() => {
+                        map.removeControl(controlDirect)
+                        controlDirect = null
+                        props._turn_off_direct()
+                    }">
+                    </VBtn>
+                </VCard>
+            </div>
+            <div class="geocoder-tool d-flex flex-row ">
+                <div class="search ">
+                    <VTextField ref="input" placeholder="Tìm kiếm" @keyup="handleSearch" class="input-search"
+                        :append-inner-icon='getIcon' color="#1f1f1f">
+                    </VTextField>
+                    <VList class="hint-list" v-if="dataHint.length != 0">
+                        <VListItem class="hint-item" v-for="(item, index) in dataHint">
+
+
+                            <div :key="index" v-on:click="() => {
+                                if (marker) map.removeLayer(marker)
+                                marker = new L.marker([item.lat, item.lon], {
+                                    icon: SearchSymbol
+                                })
+                                map.addLayer(marker).setView(marker.getLatLng(), 16);
+                                marker.bindTooltip(`<b>${item.address.country}</b><br />${item.display_name}`);
+                                dataHint.splice(0, dataHint.length)
+                                props._click_hint(item)
+
+                            }">{{ item.display_name }}
+                            </div>
+                        </VListItem>
+                    </VList>
+                </div>
+                <VBtn class="navigate-btn ml-4 mt-1" icon="mdi-crosshairs-gps" :disabled="disableGeoLocationBtn" v-on:click="() => {
+                    map.setView(currentLocationUserMarker.getLatLng(), 16)
+                    props._click_geocoder_button()
+                }"></VBtn>
+            </div>
         </div>
 
         <div id="mapDiv"> </div>
@@ -297,62 +367,65 @@ onMounted(() => {
     width: 100%;
     height: 100%;
 
-    .map-geocoder {
+    .tools {
         z-index: 1000 !important;
         position: absolute;
-        width: 30%;
-        top: 5%;
-        left: 16px;
+        width: 100%;
+        top: 0;
+        display: flex;
+        flex-direction: column;
 
-        transition: all 1s ease-out;
-
-        .navigate-btn {
-            position: absolute;
-            height: 48px;
-            width: 48px;
-            padding: 0;
-            left: 105%;
-            top: 4px;
-            background-color: #fff !important;
-            color: #000 !important;
-        }
-
-        .name-card {
-            position: absolute;
-            height: 48px;
-            width: 300px;
-            padding: 0;
-            left: 125%;
-            top: 4px;
-            background-color: #fff !important;
-            color: #000 !important;
-        }
-
-        .input-search {
-            background-color: #FFF;
-            border-radius: 8px;
-
-            input {
-                color: #000;
+        .action-tool {
+            .action-tool-item {
+                height: 48px;
+                width: 300px;
+                background-color: #fff !important;
+                color: #000 !important;
+                transition: all 1s ease-out;
             }
+
         }
 
-        .hint-list {
-            border: #9f9f9f solid 1px;
-            border-top: none;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
+        .geocoder-tool {
+            .navigate-btn {
+                height: 48px;
+                width: 48px;
+                padding: 0;
+                background-color: #fff !important;
+                color: #000 !important;
+            }
 
-            .hint-item {
-                height: 100%;
-                width: 100%;
+            .search {
+                transition: all 1s ease-out;
+                width: 25%;
 
-                div {
-                    height: 100%;
-                    width: 100%;
+                .input-search {
+                    background-color: #FFF;
+                    border-radius: 8px;
 
-                    :hover {
-                        cursor: pointer;
+                    input {
+                        color: #000;
+                    }
+                }
+
+                .hint-list {
+                    border: #9f9f9f solid 1px;
+                    border-top: none;
+                    border-bottom-left-radius: 8px;
+                    border-bottom-right-radius: 8px;
+
+                    .hint-item {
+                        height: 100%;
+                        width: 100%;
+
+                        div {
+                            height: 100%;
+                            width: 100%;
+
+                            :hover {
+                                cursor: pointer;
+                            }
+                        }
                     }
                 }
             }
@@ -376,14 +449,20 @@ onMounted(() => {
 }
 
 
-@media screen and (max-width: 912px) {
-    .map-geocoder {
-        width: 60% !important;
+@media only screen and (max-width: 960px) {
+    .map-wrap {
+        .tools {
+            .action-tool {
+                .action-tool-item {
+                    width: 70%;
+                }
+            }
 
-        .name-card {
-            width: 100% !important;
-            left: 0 !important;
-            top: 110% !important;
+            .geocoder-tool {
+                .search {
+                    width: 70%;
+                }
+            }
         }
     }
 }

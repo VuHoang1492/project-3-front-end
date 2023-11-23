@@ -16,7 +16,7 @@ const isChangePassword = ref(false)
 
 <template>
     <VRow>
-        <VCol cols="12">
+        <VCol cols="10" class="ml-16 mt-16">
             <VCard title="ĐỔI MẬT KHẨU">
 
 

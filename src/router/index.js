@@ -18,39 +18,49 @@ const router = createRouter({
         {
           path: 'account',
           component: () => import('../pages/profile.vue'),
+          meta: {
+            title: 'Tài khoản',
+          },
         },
         {
-          path: 'add-staff',
-          component: () => import('../pages/add-staff-page.vue'),
+          path: 'favorite',
+          component: () => import('../pages/favorite.vue'),
+          meta: {
+            title: 'Theo dõi',
+          },
         },
         {
-          path: 'staff-profile/:id',
-          component: () => import('../pages/staff-profile-page.vue'),
+          path: 'upgrade',
+          component: () => import('../pages/upgrade-account.vue'),
         },
         {
-          path: 'roles',
-          component: () => import('../pages/roles-page.vue'),
+          path: 'manage-restaurant',
+          component: () => import('../pages/restaurant-manage.vue'),
         },
         {
-          path: 'roles/:id',
-          component: () => import('../pages/role-info-page.vue'),
+          path: 'manage-restaurant/brand',
+          component: () => import('../pages/brand-change.vue'),
         },
         {
-          path: 'icons',
-          component: () => import('../pages/icons.vue'),
+          path: 'manage-restaurant/create',
+          component: () => import('../pages/restaurant-create.vue'),
         },
         {
-          path: 'cards',
-          component: () => import('../pages/cards.vue'),
+          path: 'manage-restaurant/:restaurantId',
+          component: () => import('../pages/restaurant-change.vue'),
         },
         {
-          path: 'tables',
-          component: () => import('../pages/tables.vue'),
+          path: 'post',
+          component: () => import('../pages/post.vue'),
         },
         {
-          path: 'form-layouts',
-          component: () => import('../pages/form-layouts.vue'),
+          path: 'post/create/:restaurantId',
+          component: () => import('../pages/post-create.vue'),
         },
+        {
+          path: 'post/:postId',
+          component: () => import('../pages/post-update.vue'),
+        }
       ],
     },
     {

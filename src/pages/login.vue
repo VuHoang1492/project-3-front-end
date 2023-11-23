@@ -1,7 +1,5 @@
 <script setup>
 import { useTheme } from 'vuetify'
-import authV1MaskDark from '@images/pages/auth-v1-mask-dark.png'
-import authV1MaskLight from '@images/pages/auth-v1-mask-light.png'
 import { useRouter } from 'vue-router'
 
 
@@ -16,9 +14,7 @@ const form = ref({
 
 const vuetifyTheme = useTheme()
 
-const authThemeMask = computed(() => {
-  return vuetifyTheme.global.name.value === 'light' ? authV1MaskLight : authV1MaskDark
-})
+
 
 const login = () => {
   console.log(form._rawValue);
@@ -70,8 +66,8 @@ const loginFailed = ref(false)
                 :append-inner-icon="isPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
                 @click:append-inner="isPasswordVisible = !isPasswordVisible" />
 
-
-
+            </VCol>
+            <VCol cols="12">
               <!-- login button -->
               <VBtn class="mt-16" block @click="login">
                 Đăng nhập
