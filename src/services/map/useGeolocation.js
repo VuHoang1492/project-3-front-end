@@ -10,7 +10,7 @@ export const useGeolocation = () => {
     if (isSupported) {
         watcher = navigator.geolocation.watchPosition(
             position => {
-                //   console.log(position);
+                // console.log(position.coords);
                 geolocation.change(position.coords.latitude, position.coords.longitude)
             },
             err => {

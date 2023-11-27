@@ -6,14 +6,14 @@ const mockData = [
         name: 'Restaurant 1',
         lat: 21.0191446,
         lon: 105.8347163,
-        rating: 7
+        rating: 1.5
     },
     {
         id: 2,
         name: 'Restaurant 2',
         lat: 21.0212571,
         lon: 105.8376679,
-        rating: 7.5
+        rating: 2.5
     },
     {
         id: 3,
@@ -27,7 +27,7 @@ const mockData = [
         name: 'Restaurant 4',
         lat: 21.0248586,
         lon: 105.8327363,
-        rating: 9.5
+        rating: 3.5
     },
     {
         id: 5,

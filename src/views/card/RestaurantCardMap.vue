@@ -9,7 +9,6 @@ import { useRoute, useRouter } from 'vue-router';
 
 const props = defineProps(['restaurant'])
 const router = useRouter()
-const route = useRoute()
 
 
 const tab = ref(null)
@@ -27,13 +26,15 @@ const setFavoriteIcon = computed(() => {
         <v-img src="https://media.timeout.com/images/106000654/1920/1080/image.jpg" aspect-ratio="16/9" cover>
         </v-img>
         <v-card-title class="text-h5" v-text="props.restaurant.name"></v-card-title>
-        <vue3-star-ratings class="ml-4" v-model="props.restaurant.rating" :numberOfStars="10" />
+        <v-rating class="ml-4" v-model="props.restaurant.rating" active-color="warning" color="warning" readonly
+            empty-icon="mdi-star-outline" full-icon="mdi-star" half-increments :size="30" length="10"></v-rating>
+
         <v-card-text>Description about restaurant</v-card-text>
         <div class="d-flex">
             <v-btn class=" w-30 mb-2" variant="text" v-on:click="() => favorite = !favorite">Theo dõi
                 <v-icon end :icon="setFavoriteIcon"></v-icon>
             </v-btn>
-            <v-btn class="w-30 mb-2" variant="text">Đánh giá
+            <v-btn class="w-30 mb-2" variant="text" @click="() => { router.push('/review/create/restaurantId') }">Đánh giá
                 <v-icon end icon="mdi-pencil"></v-icon>
             </v-btn>
             <v-btn class="w-30 mb-2" variant="text" @click="$emit('onDirect')">Chỉ đường

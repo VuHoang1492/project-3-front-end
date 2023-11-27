@@ -1,6 +1,10 @@
 <script setup>
 import { onUnmounted } from 'vue';
 import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+
+const router = useRouter()
 
 const overlay = ref(false)
 const imageInOverlay = ref('')
@@ -28,17 +32,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <v-card class="review-card pt-8 pb-8 pl-4 pr-4 mb-8" variant="tonal">
-        <v-btn variant="text" class="rounded-circle report-btn">
-            <v-icon center icon="mdi-flag-outline"></v-icon>
-        </v-btn>
-        <!-- <v-btn variant="text" class="rounded-circle report-btn">
-            <v-icon center icon="mdi-account-cancel"></v-icon>
-        </v-btn> -->
-        <v-card-subtitle width="100%" class="font-weight-black">
-            Người đăng ẩn danh
-        </v-card-subtitle>
-        <v-card-subtitle class="font-italic">dd/mm/yyyy</v-card-subtitle>
+    <v-card class="post-card pt-8 pb-8 pl-16 pr-16 mb-8" variant="tonal">
+        <v-card-title width="100%">
+            Title
+        </v-card-title>
         <v-card-text>Description about post</v-card-text>
         <v-card-item class="media-files">
             <v-img v-on:click="handleClickImage" cover
@@ -50,8 +47,14 @@ onUnmounted(() => {
             <v-img v-on:click="handleClickImage" cover
                 src="https://elitetour.com.vn/files/images/Blogs/cafehl.jpeg"></v-img>
         </v-card-item>
+        <v-divider class="ma-4"></v-divider>
+        <div class="d-flex flex-row">
+            <VBtn prepend-icon="mdi-pencil-box-multiple-outline" class="w-50" variant="text"
+                @click="() => router.push('/post/:postId')">Chỉnh sửa
+            </VBtn>
+            <VBtn prepend-icon="mdi-delete-outline" class="w-50" variant="text">Xóa</VBtn>
+        </div>
     </v-card>
-
     <v-overlay v-model="overlay" class="align-center justify-center">
         <v-img :src="imageInOverlay" class="img-overlay"></v-img>
     </v-overlay>
@@ -59,9 +62,7 @@ onUnmounted(() => {
 
 
 <style lang="scss" >
-.review-card {
-    position: relative;
-
+.post-card {
 
     .report-btn {
         height: 32px;
@@ -71,7 +72,6 @@ onUnmounted(() => {
         right: 8px;
         padding: 0;
     }
-
 
     .media-files {
         width: 100%;
@@ -92,6 +92,7 @@ onUnmounted(() => {
         }
     }
 }
+
 
 .img-overlay {
     width: 640px;

@@ -10,7 +10,6 @@ export const useGeolocationStore = defineStore('geolocation', {
         change(newLat, newLng) {
             this.latitude = newLat
             this.longitude = newLng
-            this.accept = true
         },
         decline() {
             this.accept = false

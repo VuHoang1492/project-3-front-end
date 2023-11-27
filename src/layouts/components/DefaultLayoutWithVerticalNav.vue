@@ -56,6 +56,8 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
         to: '/upgrade',
       }" />
 
+
+      <!-- Restaurant-->
       <VerticalNavSectionTitle :item="{
         heading: 'Quản lý cửa hàng',
       }" />
@@ -65,6 +67,11 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
         icon: 'mdi-format-list-bulleted-square',
         to: '/manage-restaurant',
       }" />
+      <VerticalNavLink :item="{
+        title: 'Chờ phê duyệt',
+        icon: 'mdi-format-list-bulleted-square',
+        to: '/consisder',
+      }" />
 
       <VerticalNavLink :item="{
         title: ' Post',
@@ -72,19 +79,34 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
         to: '/post',
       }" />
 
-      <!-- 👉 User Interface -->
+      <!-- 👉 Admin -->
       <VerticalNavSectionTitle :item="{
         heading: 'Admin',
       }" />
       <VerticalNavLink :item="{
-        title: 'Khóa người dùng',
-        icon: 'mdi-account-cancel',
-        to: '/typography',
+        title: 'Quản lý người dùng',
+        icon: 'mdi-account',
+        to: '/admin/user-manage',
       }" />
       <VerticalNavLink :item="{
-        title: 'Xét duyệt nâng cấp',
-        icon: 'mdi-eye-outline',
-        to: '/icons',
+        title: 'Quản lý cửa hàng',
+        icon: 'mdi-home-edit',
+        to: '/admin/restaurant-manage',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Xét duyệt',
+        icon: 'mdi-file-check',
+        to: '/admin/forms',
+      }" />
+
+      <!--System-->
+      <VerticalNavSectionTitle :item="{
+        heading: 'Hệ thống',
+      }" />
+      <VerticalNavLink :item="{
+        title: 'Thông báo',
+        icon: 'mdi-bell-outline',
+        to: '/notification',
       }" />
     </template>
 

@@ -15,12 +15,16 @@ const props = defineProps({
         type: String,
         default: ""
     },
+    geocoder: {
+        type: Boolean,
+        default: true
+    },
     destination: {
         type: Object,
-        default: {
+        default: reactive({
             lat: null,
             lng: null
-        }
+        })
     },
     item_list: {
         type: Array,
@@ -85,7 +89,7 @@ watch(user_position, () => {
     getLocationByLatlng(user_position.latitude, user_position.longitude)
         .then(res => {
             if (currentLocationUserMarker) map.removeLayer(currentLocationUserMarker)
-            currentLocationUserMarker = new L.marker([res.data.lat, res.data.lon], {
+            currentLocationUserMarker = new L.marker([user_position.latitude, user_position.longitude], {
                 icon: UserPositionSymbol
             })
 
@@ -143,6 +147,7 @@ watch(props.item_list, () => {
             props._click_item(item)
             map.setView([item.lat, item.lon], 16)
         })
+        m.id = item.name
         itemMaker.push(m)
         map.addLayer(m);
         m.bindTooltip(`<b>${item.name}</b>`);
@@ -153,6 +158,12 @@ watch(props.item_list, () => {
 watch(props.destination, () => {
 
     if (props.destination.lat != null && props.destination.lng != null) {
+
+        itemMaker.forEach((item) => {
+            if (props.destination.name !== item.id) map.removeLayer(item)
+        })
+
+
         controlDirect = L.Routing.control({
             waypoints: [
                 L.latLng(user_position.latitude, user_position.longitude),
@@ -255,9 +266,10 @@ const initMap = () => {
 
     //init current user location
     if (user_position.accept) {
+
         getLocationByLatlng(user_position.latitude, user_position.longitude)
             .then(res => {
-                currentLocationUserMarker = new L.marker([res.data.lat, res.data.lon], {
+                currentLocationUserMarker = new L.marker([user_position.latitude, user_position.longitude], {
                     icon: UserPositionSymbol
                 })
 
@@ -273,7 +285,6 @@ const initMap = () => {
     if (props.init_point.lat != null && props.init_point.lng != null) {
         getLocationByLatlng(props.init_point.lat, props.init_point.lng)
             .then(res => {
-                console.log(res);
                 marker = new L.marker([res.data.lat, res.data.lon], {
                     icon: SearchSymbol
                 })
@@ -298,7 +309,7 @@ onMounted(() => {
 
 <template>
     <div class="map-wrap">
-        <div class="tools mt-8 pl-4">
+        <div class="tools mt-8 pl-4" v-if="geocoder">
             <div class="action-tool d-flex  flex-column align-start  flex-md-row" v-if="props.map_type === 'restaurant'">
                 <VBtn class="mr-4 mb-4 action-tool-item" color="orange-lighten-2"
                     :disabled="!user_position.accept || _find_round == false" v-on:click="() => {
@@ -320,6 +331,9 @@ onMounted(() => {
                     <VBtn color="orange-lighten-2" variant="text" icon="mdi-close" v-on:click="() => {
                         map.removeControl(controlDirect)
                         controlDirect = null
+                        itemMaker.forEach((item) => {
+                            if (props.destination.name !== item.id) map.addLayer(item)
+                        })
                         props._turn_off_direct()
                     }">
                     </VBtn>
@@ -328,7 +342,7 @@ onMounted(() => {
             <div class="geocoder-tool d-flex flex-row ">
                 <div class="search ">
                     <VTextField ref="input" placeholder="Tìm kiếm" @keyup="handleSearch" class="input-search"
-                        :append-inner-icon='getIcon' color="#1f1f1f">
+                        :append-inner-icon='getIcon' :disabled="_find_round == false">
                     </VTextField>
                     <VList class="hint-list" v-if="dataHint.length != 0">
                         <VListItem class="hint-item" v-for="(item, index) in dataHint">
@@ -387,6 +401,8 @@ onMounted(() => {
         }
 
         .geocoder-tool {
+
+
             .navigate-btn {
                 height: 48px;
                 width: 48px;
@@ -399,12 +415,13 @@ onMounted(() => {
                 transition: all 1s ease-out;
                 width: 25%;
 
+
                 .input-search {
                     background-color: #FFF;
                     border-radius: 8px;
 
                     input {
-                        color: #000;
+                        color: #000 !important;
                     }
                 }
 

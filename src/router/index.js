@@ -17,49 +17,84 @@ const router = createRouter({
         },
         {
           path: 'account',
-          component: () => import('../pages/profile.vue'),
+          component: () => import('../pages/user/profile.vue'),
           meta: {
             title: 'Tài khoản',
           },
         },
         {
           path: 'favorite',
-          component: () => import('../pages/favorite.vue'),
+          component: () => import('../pages/user/favorite.vue'),
           meta: {
             title: 'Theo dõi',
           },
         },
         {
           path: 'upgrade',
-          component: () => import('../pages/upgrade-account.vue'),
+          component: () => import('../pages/user/upgrade-account.vue'),
         },
+        //restaurant
         {
           path: 'manage-restaurant',
-          component: () => import('../pages/restaurant-manage.vue'),
+          component: () => import('../pages/restaurant/restaurant-manage.vue'),
         },
         {
           path: 'manage-restaurant/brand',
-          component: () => import('../pages/brand-change.vue'),
+          component: () => import('../pages/restaurant/brand-change.vue'),
         },
         {
           path: 'manage-restaurant/create',
-          component: () => import('../pages/restaurant-create.vue'),
+          component: () => import('../pages/restaurant/restaurant-create.vue'),
         },
         {
           path: 'manage-restaurant/:restaurantId',
-          component: () => import('../pages/restaurant-change.vue'),
+          component: () => import('../pages/restaurant/restaurant-change.vue'),
         },
         {
           path: 'post',
-          component: () => import('../pages/post.vue'),
+          component: () => import('../pages/restaurant/post.vue'),
         },
         {
           path: 'post/create/:restaurantId',
-          component: () => import('../pages/post-create.vue'),
+          component: () => import('../pages/restaurant/post-create.vue'),
         },
         {
           path: 'post/:postId',
-          component: () => import('../pages/post-update.vue'),
+          component: () => import('../pages/restaurant/post-update.vue'),
+        },
+        {
+          path: 'review/create/:restaurantId',
+          component: () => import('../pages/restaurant/review-create.vue'),
+        },
+        {
+          path: 'consisder',
+          component: () => import('../pages/restaurant/consisder.vue'),
+        },
+        //Admin
+        {
+          path: 'admin/user-manage',
+          component: () => import('../pages/admin/admin-user/user-manage.vue'),
+        },
+        {
+          path: 'admin/restaurant-manage',
+          component: () => import('../pages/admin/admin-restaurant/restaurant-manage.vue'),
+        },
+        {
+          path: 'admin/forms',
+          component: () => import('../pages/admin/admin-form/form-manage.vue'),
+        },
+        {
+          path: 'admin/forms/:formId/restaurant',
+          component: () => import('../pages/admin/admin-form/restaurant-form.vue'),
+        },
+        {
+          path: 'admin/forms/:formId/report',
+          component: () => import('../pages/admin/admin-user/report-form.vue'),
+        }
+        ,
+        {
+          path: 'notification',
+          component: () => import('../pages/notification.vue'),
         }
       ],
     },
@@ -69,14 +104,14 @@ const router = createRouter({
       children: [
         {
           path: 'login',
-          component: () => import('../pages/login.vue'),
+          component: () => import('../pages/authentication/login.vue'),
           meta: {
             title: 'Đăng nhập',
           },
         },
         {
           path: 'register',
-          component: () => import('../pages/register.vue'),
+          component: () => import('../pages/authentication/register.vue'),
           meta: {
             title: 'Đăng ký',
           },

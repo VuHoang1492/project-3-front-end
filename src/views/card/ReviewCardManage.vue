@@ -29,12 +29,10 @@ onUnmounted(() => {
 
 <template>
     <v-card class="review-card pt-8 pb-8 pl-4 pr-4 mb-8" variant="tonal">
+
         <v-btn variant="text" class="rounded-circle report-btn">
-            <v-icon center icon="mdi-flag-outline"></v-icon>
+            <v-icon center icon="mdi-delete-outline"></v-icon>
         </v-btn>
-        <!-- <v-btn variant="text" class="rounded-circle report-btn">
-            <v-icon center icon="mdi-account-cancel"></v-icon>
-        </v-btn> -->
         <v-card-subtitle width="100%" class="font-weight-black">
             Người đăng ẩn danh
         </v-card-subtitle>
