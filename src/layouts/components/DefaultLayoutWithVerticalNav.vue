@@ -2,11 +2,12 @@
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
+import { useUserStore } from '@/stores/user';
+import { Roles, getRoleUser } from '@/helpers/roles'
 
-
-
-
-
+const user = useUserStore().user
+const role = getRoleUser()
+console.log(role);
 </script>
 
 <template>
@@ -22,35 +23,31 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
 
     <template #vertical-nav-content>
 
-      <!-- <VerticalNavLink :item="{
-        title: 'Trang chủ',
-        icon: 'mdi-home-outline',
-        to: '/home',
-      }" /> -->
+
 
 
       <!-- 👉 Pages -->
-      <VerticalNavSectionTitle :item="{
+      <VerticalNavSectionTitle v-if="role == Roles.OWNER || role == Roles.USER" :item="{
         heading: 'Tài Khoản',
       }" />
-      <VerticalNavLink :item="{
+      <VerticalNavLink v-if="role == Roles.GUEST" :item="{
         title: 'Đăng nhập',
         icon: 'mdi-login',
         to: '/login',
       }" />
-      <VerticalNavLink :item="{
-        title: 'Example@gmail.com',
+      <VerticalNavLink v-if="role !== Roles.GUEST" :item="{
+        title: role == Roles.ADMIN ? 'Admin' : user.email,
         icon: 'mdi-account',
         to: '/account',
       }" />
 
-      <VerticalNavLink :item="{
+      <VerticalNavLink v-if="role == Roles.OWNER || role == Roles.USER" :item="{
         title: 'Nhà hàng theo dõi',
         icon: 'mdi-book-heart-outline',
         to: '/favorite',
       }" />
 
-      <VerticalNavLink :item="{
+      <VerticalNavLink v-if="role == Roles.USER" :item="{
         title: 'Nâng cấp ',
         icon: 'mdi-arrow-up-bold-outline',
         to: '/upgrade',
@@ -58,42 +55,42 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
 
 
       <!-- Restaurant-->
-      <VerticalNavSectionTitle :item="{
+      <VerticalNavSectionTitle v-if="role == Roles.OWNER" :item="{
         heading: 'Quản lý cửa hàng',
       }" />
 
-      <VerticalNavLink :item="{
+      <VerticalNavLink v-if="role == Roles.OWNER" :item="{
         title: 'Danh sách cửa hàng',
         icon: 'mdi-format-list-bulleted-square',
-        to: '/manage-restaurant',
+        to: '/owner/manage-restaurant',
       }" />
-      <VerticalNavLink :item="{
+      <VerticalNavLink v-if="role == Roles.OWNER" :item="{
         title: 'Chờ phê duyệt',
         icon: 'mdi-format-list-bulleted-square',
-        to: '/consisder',
+        to: '/owner/consisder',
       }" />
 
-      <VerticalNavLink :item="{
+      <VerticalNavLink v-if="role == Roles.OWNER" :item="{
         title: ' Post',
         icon: 'mdi-post',
-        to: '/post',
+        to: '/owner/post',
       }" />
 
       <!-- 👉 Admin -->
-      <VerticalNavSectionTitle :item="{
+      <VerticalNavSectionTitle v-if="role == Roles.ADMIN" :item="{
         heading: 'Admin',
       }" />
-      <VerticalNavLink :item="{
+      <VerticalNavLink v-if="role == Roles.ADMIN" :item="{
         title: 'Quản lý người dùng',
         icon: 'mdi-account',
         to: '/admin/user-manage',
       }" />
-      <VerticalNavLink :item="{
+      <VerticalNavLink v-if="role == Roles.ADMIN" :item="{
         title: 'Quản lý cửa hàng',
         icon: 'mdi-home-edit',
         to: '/admin/restaurant-manage',
       }" />
-      <VerticalNavLink :item="{
+      <VerticalNavLink v-if="role == Roles.ADMIN" :item="{
         title: 'Xét duyệt',
         icon: 'mdi-file-check',
         to: '/admin/forms',
@@ -105,7 +102,8 @@ import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTit
       }" />
       <VerticalNavLink :item="{
         title: 'Thông báo',
-        icon: 'mdi-bell-outline',
+        icon: 'mdi-bell-badge-outline',
+        //icon: 'mdi-bell-outline',
         to: '/notification',
       }" />
     </template>

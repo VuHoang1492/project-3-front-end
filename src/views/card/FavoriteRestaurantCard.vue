@@ -10,7 +10,6 @@ const onDirect = () => {
 
 <template>
     <VRow>
-        <!-- 👉 Apple iPhone 11 Pro -->
         <VCol cols="10">
             <VCard>
                 <div class="d-flex   flex-nowrap flex-row">

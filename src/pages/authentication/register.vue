@@ -1,11 +1,46 @@
 <script setup>
-import { useTheme } from 'vuetify'
+import { validateEmail } from '@/helpers/validate';
+import { register } from '@/services/axios/api/api'
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 
-const form = ref({
+let emailInvalid = ref(false)
+let snackbar = ref(false)
+let snackbarText = ref('')
+
+const form = reactive({
   email: '',
   privacyPolicies: false,
 })
+
+
+const handleRegister = () => {
+
+  if (!validateEmail(form.email)) {
+    snackbar.value = true
+    snackbarText.value = "Email  không hợp lện!!!"
+    emailInvalid.value = true
+    return
+  }
+  register(form.email).then(res => {
+    console.log(res);
+    if (res.status === 200) {
+      snackbar.value = true
+      snackbarText.value = "Thư xác nhận đã gửi tới hòm thư. Vui lòng kiểm tra mail!!"
+    }
+  }).catch(err => {
+    if (err.response.status === 400) {
+      snackbar.value = true
+      snackbarText.value = "Email không hợp lệ hoặc đã được sử dụng!!"
+      emailInvalid.value = true
+
+    } else {
+      snackbar.value = true
+      snackbarText.value = "Server error !!!"
+    }
+  })
+}
 
 </script>
 
@@ -28,7 +63,7 @@ const form = ref({
         <VRow>
           <!-- email -->
           <VCol cols="12">
-            <VTextField v-model="form.email" label="Email" type="email" />
+            <VTextField v-model="form.email" label="Email" :error="emailInvalid" type="email" />
           </VCol>
 
           <!-- password -->
@@ -42,8 +77,11 @@ const form = ref({
               </VLabel>
             </div>
 
-            <VBtn block type="submit" to="/">
+            <VBtn block @click="handleRegister" :disabled="!form.privacyPolicies">
               Đăng Ký
+            </VBtn>
+            <VBtn class="mt-4" block @click="() => { router.push('/home') }">
+              Đến trang chủ
             </VBtn>
           </VCol>
 
@@ -59,6 +97,16 @@ const form = ref({
       </VCardText>
     </VCard>
   </div>
+
+  <v-snackbar v-model="snackbar" :timeout="5000" color="primary" location="top">
+    {{ snackbarText }}
+
+    <template v-slot:actions>
+      <v-btn color="blue" variant="text" @click="snackbar = false">
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <style lang="scss">

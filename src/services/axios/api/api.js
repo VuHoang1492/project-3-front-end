@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { instanceApiData } from "./constants";
 const mockData = [
     {
         id: 1,
@@ -55,4 +55,28 @@ export const getRestaurantById = (id) => {
         else
             rej(404)
     })
+}
+
+export const login = (email, password) => {
+    return instanceApiData.post('/login', {
+        email: email,
+        password: password
+    })
+}
+
+
+export const register = (email) => {
+    return instanceApiData.post('/register', {
+        email: email
+    })
+}
+
+export const forgetPassword = (email) => {
+    return instanceApiData.post('/forget', {
+        email: email
+    })
+}
+
+export const getUserProfile = () => {
+    return instanceApiData.get('/profile')
 }

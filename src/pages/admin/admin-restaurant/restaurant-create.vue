@@ -60,6 +60,26 @@ const locationString = computed(() => {
                             <VCol cols="12">
                                 <VTextField label="THƯƠNG HIỆU" />
                             </VCol>
+                            <VCol cols="12">
+                                <VTextField label="Người Sở Hữu" disabled />
+                            </VCol>
+
+
+                            <VCol cols="12">
+                                <VDivider></VDivider>
+                            </VCol>
+                            <VCol cols="12">
+                                <VTextField label="Email" disabled />
+                            </VCol>
+
+
+                            <VCol cols="12">
+                                <VDivider></VDivider>
+                            </VCol>
+                            <VCol cols="12">
+                                <VTextField label="Số Điện Thoại" disabled />
+                            </VCol>
+
 
 
                             <VCol cols="12">

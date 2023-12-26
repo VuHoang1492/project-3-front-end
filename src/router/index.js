@@ -1,3 +1,5 @@
+import { Roles, getRoleUser } from '@/helpers/roles'
+import { useTokenStore } from '@/stores/token'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -33,41 +35,42 @@ const router = createRouter({
           path: 'upgrade',
           component: () => import('../pages/user/upgrade-account.vue'),
         },
-        //restaurant
-        {
-          path: 'manage-restaurant',
-          component: () => import('../pages/restaurant/restaurant-manage.vue'),
-        },
-        {
-          path: 'manage-restaurant/brand',
-          component: () => import('../pages/restaurant/brand-change.vue'),
-        },
-        {
-          path: 'manage-restaurant/create',
-          component: () => import('../pages/restaurant/restaurant-create.vue'),
-        },
-        {
-          path: 'manage-restaurant/:restaurantId',
-          component: () => import('../pages/restaurant/restaurant-change.vue'),
-        },
-        {
-          path: 'post',
-          component: () => import('../pages/restaurant/post.vue'),
-        },
-        {
-          path: 'post/create/:restaurantId',
-          component: () => import('../pages/restaurant/post-create.vue'),
-        },
-        {
-          path: 'post/:postId',
-          component: () => import('../pages/restaurant/post-update.vue'),
-        },
         {
           path: 'review/create/:restaurantId',
           component: () => import('../pages/restaurant/review-create.vue'),
         },
+        //restaurant
         {
-          path: 'consisder',
+          path: 'owner/manage-restaurant',
+          component: () => import('../pages/restaurant/restaurant-manage.vue'),
+        },
+        {
+          path: 'owner/manage-restaurant/brand',
+          component: () => import('../pages/restaurant/brand-change.vue'),
+        },
+        {
+          path: 'owner/manage-restaurant/create',
+          component: () => import('../pages/restaurant/restaurant-create.vue'),
+        },
+        {
+          path: 'owner/manage-restaurant/:restaurantId',
+          component: () => import('../pages/restaurant/restaurant-change.vue'),
+        },
+        {
+          path: 'owner/post',
+          component: () => import('../pages/restaurant/post.vue'),
+        },
+        {
+          path: 'owner/post/create/:restaurantId',
+          component: () => import('../pages/restaurant/post-create.vue'),
+        },
+        {
+          path: 'owner/post/:postId',
+          component: () => import('../pages/restaurant/post-update.vue'),
+        },
+
+        {
+          path: 'owner/consisder',
           component: () => import('../pages/restaurant/consisder.vue'),
         },
         //Admin
@@ -117,6 +120,13 @@ const router = createRouter({
           },
         },
         {
+          path: 'forget',
+          component: () => import('../pages/authentication/forget-password.vue'),
+          meta: {
+            title: 'Đăng ký',
+          },
+        },
+        {
           path: '/:pathMatch(.*)*',
           component: () => import('../pages/[...all].vue'),
         },
@@ -125,9 +135,48 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from) => {
 
-  document.title = to.meta?.title ?? 'Default   '
+const authPath = ['/login', '/register', '/forget']
+
+router.beforeEach((to, from) => {
+  const role = getRoleUser()
+  console.log(role);
+  document.title = to.meta?.title ?? 'Default'
+  if (authPath.includes(to.path)) {
+    if (useTokenStore().accessToken != null) {
+      alert('Bạn đã đăng nhập!!')
+      router.push('/home')
+      return
+    }
+  }
+  if (to.path.startsWith('/admin')) {
+    if (role !== Roles.ADMIN) {
+      router.push('/home')
+      alert('Bạn không có quyền truy cập!!')
+      return
+    }
+  }
+
+  if (to.path.startsWith('/owner')) {
+    if (role !== Roles.OWNER) {
+      router.push('/home')
+      alert('Bạn không có quyền truy cập!!')
+      return
+    }
+  }
+  if (to.path.startsWith('/upgrade')) {
+    if (role !== Roles.USER) {
+      router.push('/home')
+      alert('Bạn không có quyền truy cập!!')
+      return
+    }
+  }
+  if (to.path.startsWith('/account')) {
+    if (role === Roles.GUEST) {
+      router.push('/home')
+      return
+    }
+  }
 })
 
 export default router

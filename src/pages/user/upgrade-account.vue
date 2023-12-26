@@ -27,6 +27,12 @@
                             <VCol cols="10">
                                 <VTextField label="Số điện thoại" />
                             </VCol>
+                            <VCol cols="10">
+                                <v-radio-group>
+                                    <v-radio label="Trải nghiệm" value="trial"></v-radio>
+                                    <v-radio label="Vip" value="vip"></v-radio>
+                                </v-radio-group>
+                            </VCol>
 
 
                             <VCol class="d-flex flex-column gap-4  v-col-12 v-col-sm-7">
