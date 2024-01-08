@@ -3,11 +3,33 @@ import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
 import { useUserStore } from '@/stores/user';
-import { Roles, getRoleUser } from '@/helpers/roles'
+import { useTokenStore } from '@/stores/token';
+import { Roles } from '@/helpers/roles'
+import { getCountNotification } from '@/services/axios/api/api';
+import { useNotificationStore } from '@/stores/notification'
 
-const user = useUserStore().user
-const role = getRoleUser()
+
+
+const userStore = useUserStore()
+
+let role = Roles.GUEST
+if (userStore.user)
+  role = userStore.user.role
+
 console.log(role);
+const notification = useNotificationStore()
+
+getCountNotification().then(res => {
+  notification.init(res.data.data.count)
+}).catch(err => {
+  console.log(err);
+})
+
+const listenerNoti = new EventSource(`http://localhost:3000/notification/sse?accessToken=${useTokenStore().accessToken}`)
+listenerNoti.onmessage = mes => {
+  notification.increaseCount()
+  console.log(mes);
+} 
 </script>
 
 <template>
@@ -16,7 +38,7 @@ console.log(role);
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
         <IconBtn class="ms-n3 d-lg-none btn-sider" @click="toggleVerticalOverlayNavActive(true)">
-          <VIcon size="32" icon="mdi-menu " />
+          <VIcon color="primary" size="32" icon="mdi-menu " />
         </IconBtn>
       </div>
     </template>
@@ -36,7 +58,7 @@ console.log(role);
         to: '/login',
       }" />
       <VerticalNavLink v-if="role !== Roles.GUEST" :item="{
-        title: role == Roles.ADMIN ? 'Admin' : user.email,
+        title: role == Roles.ADMIN ? 'Admin' : userStore.user.email,
         icon: 'mdi-account',
         to: '/account',
       }" />
@@ -101,9 +123,9 @@ console.log(role);
         heading: 'Hệ thống',
       }" />
       <VerticalNavLink :item="{
-        title: 'Thông báo',
+        title: `Thông báo mới (${notification.count})`,
         icon: 'mdi-bell-badge-outline',
-        //icon: 'mdi-bell-outline',
+        color: 'error',
         to: '/notification',
       }" />
     </template>

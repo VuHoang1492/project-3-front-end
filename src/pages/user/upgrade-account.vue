@@ -1,7 +1,27 @@
 <script setup>
+import { upgrade } from '@/services/axios/api/api'
 
+let snackbar = ref(false)
+let snackbarText = ref('')
 
+const form = reactive({
+    userName: '',
+    brandName: '',
+    numberPhone: '',
+    level: ''
+})
 
+const handleUpgrade = () => {
+    upgrade(form).then(res => {
+        console.log(res);
+        snackbar.value = true
+        snackbarText.value = "Đơn đã được gửi! Vui lòng chờ phê duyệt hoặc liên hệ Admin!"
+    }).catch(err => {
+        console.log(err);
+        snackbar.value = true
+        snackbarText.value = "Có lỗi xảy ra!"
+    })
+}
 
 
 </script>
@@ -19,16 +39,16 @@
                     <VForm class="mt-6">
                         <VRow>
                             <VCol cols="10">
-                                <VTextField label="Họ Và Tên Người Sở Hữu" />
+                                <VTextField label="Họ Và Tên Người Sở Hữu" v-model="form.userName" />
                             </VCol>
                             <VCol cols="10">
-                                <VTextField label="Tên Thương Hiệu" />
+                                <VTextField label="Tên Thương Hiệu" v-model="form.brandName" />
                             </VCol>
                             <VCol cols="10">
-                                <VTextField label="Số điện thoại" />
+                                <VTextField label="Số điện thoại" v-model="form.numberPhone" />
                             </VCol>
                             <VCol cols="10">
-                                <v-radio-group>
+                                <v-radio-group v-model="form.level">
                                     <v-radio label="Trải nghiệm" value="trial"></v-radio>
                                     <v-radio label="Vip" value="vip"></v-radio>
                                 </v-radio-group>
@@ -51,7 +71,10 @@
                                                 <v-spacer></v-spacer>
 
                                                 <v-btn text="Đóng" @click="isActive.value = false"></v-btn>
-                                                <v-btn text="Xác nhận"></v-btn>
+                                                <v-btn text="Xác nhận" @click="{
+                                                    isActive.value = false
+                                                    handleUpgrade();
+                                                }"></v-btn>
                                             </v-card-actions>
                                         </v-card>
                                     </template>
@@ -68,4 +91,13 @@
             </VCard>
         </VCol>
     </VRow>
+    <v-snackbar v-model="snackbar" :timeout="5000" color="primary" location="top">
+        {{ snackbarText }}
+
+        <template v-slot:actions>
+            <v-btn color="blue" variant="text" @click="snackbar = false">
+                Close
+            </v-btn>
+        </template>
+    </v-snackbar>
 </template>

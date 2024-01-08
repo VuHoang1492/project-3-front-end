@@ -1,5 +1,19 @@
 <script setup>
-const props = defineProps(['message'])
+import { seenNoti } from '@/services/axios/api/api'
+import { useNotificationStore } from '@/stores/notification';
+const props = defineProps(['message', 'link', 'item_id'])
+
+
+const notification = useNotificationStore()
+const clickSeen = (id) => {
+    seenNoti(id).then(res => {
+        console.log(res);
+        notification.decreaseCount()
+    }).catch(err => {
+        console.log(err);
+    })
+
+}
 </script>
 
 <template>
@@ -9,9 +23,9 @@ const props = defineProps(['message'])
                 {{ props.message }}
             </span>
         </div>
-        <a>
-            Click here
-        </a>
+        <RouterLink :to="props.link" @click="clickSeen(props.item_id)">
+            Xem
+        </RouterLink>
     </div>
 </template>
 

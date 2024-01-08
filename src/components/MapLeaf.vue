@@ -140,17 +140,17 @@ watch(props.item_list, () => {
     itemMaker.splice(0, itemMaker.length)
 
     props.item_list.forEach(item => {
-        let m = new L.marker([item.lat, item.lon], {
+        let m = new L.marker([item.lat, item.lng], {
             icon: RestaurantSymbol
         })
         m.on('click', () => {
             props._click_item(item)
-            map.setView([item.lat, item.lon], 16)
+            map.setView([item.lat, item.lng], 16)
         })
-        m.id = item.name
+        m.id = item._id
         itemMaker.push(m)
         map.addLayer(m);
-        m.bindTooltip(`<b>${item.name}</b>`);
+        m.bindTooltip(`<b>${item.displayName}</b>`);
     })
 
 }, { deep: true })
@@ -160,7 +160,7 @@ watch(props.destination, () => {
     if (props.destination.lat != null && props.destination.lng != null) {
 
         itemMaker.forEach((item) => {
-            if (props.destination.name !== item.id) map.removeLayer(item)
+            if (props.destination.id !== item.id) map.removeLayer(item)
         })
 
 
@@ -246,6 +246,7 @@ const initMap = () => {
 
     map.on('click', (e) => {
         if (props.allow_click_map) {
+
             getLocationByLatlng(e.latlng.lat, e.latlng.lng)
                 .then(res => {
                     if (marker) map.removeLayer(marker)
@@ -283,6 +284,7 @@ const initMap = () => {
     }
 
     if (props.init_point.lat != null && props.init_point.lng != null) {
+
         getLocationByLatlng(props.init_point.lat, props.init_point.lng)
             .then(res => {
                 marker = new L.marker([res.data.lat, res.data.lon], {
@@ -332,7 +334,10 @@ onMounted(() => {
                         map.removeControl(controlDirect)
                         controlDirect = null
                         itemMaker.forEach((item) => {
-                            if (props.destination.name !== item.id) map.addLayer(item)
+                            if (props.destination.name !== item.id) {
+                                map.addLayer(item)
+                            }
+
                         })
                         props._turn_off_direct()
                     }">

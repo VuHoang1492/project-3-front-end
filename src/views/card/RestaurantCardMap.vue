@@ -3,41 +3,100 @@ import { ref } from 'vue'
 import PostCard from './PostCard.vue'
 import ReviewCard from './ReviewCard.vue'
 import { computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-
-
+import { useRouter } from 'vue-router';
+import { followRestaurant, unfollowRestaurant, getPostByRestaurant } from '@/services/axios/api/api';
 
 const props = defineProps(['restaurant'])
 const router = useRouter()
 
-
 const tab = ref(null)
-const favorite = ref(false)
-const setFavoriteIcon = computed(() => {
-    return favorite.value ? 'mdi-heart-outline' : 'mdi-plus'
+const follow = ref(false)
+
+const status = computed(() => {
+
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const today = daysOfWeek[dayOfWeek];
+    const inWeek = props.restaurant.inWeek.split(',')
+    follow.value = props.restaurant.favorite
+    const open = props.restaurant.open.split(':')
+    const start = new Date()
+    start.setHours(Number(open[0]), Number(open[1]), 0)
+
+    const close = props.restaurant.close.split(':')
+    const end = new Date()
+    end.setHours(Number(close[0]), Number(close[1]), 0)
+
+    if (end < start) end.setDate(now.getDate() + 1)
+
+    if (start <= now && now <= end && inWeek.includes(today)) return 'Đang mở cửa'
+    return 'Đang đóng cửa'
+
 })
 
 
+const handleFollow = (id) => {
+    followRestaurant(id).then(res => {
+        console.log(res);
+        follow.value = true
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+const handleUnfollow = (id) => {
+    unfollowRestaurant(id).then(res => {
+        console.log(res);
+        follow.value = !follow.value
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+
+const post = reactive([])
+getPostByRestaurant(props.restaurant._id).then(res => {
+    res.data.data.forEach(item => {
+        post.push(item)
+    })
+    console.log(res);
+}).catch(err => {
+    console.log(err);
+})
 
 </script>
 
 <template>
     <v-card width="100%" variant="flat" class="main-card">
-        <v-img src="https://media.timeout.com/images/106000654/1920/1080/image.jpg" aspect-ratio="16/9" cover>
+        <v-img :src="props.restaurant.thumbnail" aspect-ratio="16/9" cover>
         </v-img>
-        <v-card-title class="text-h5" v-text="props.restaurant.name"></v-card-title>
+        <v-card-title class="text-h5" v-text="props.restaurant.restaurantName"></v-card-title>
         <v-rating class="ml-4" v-model="props.restaurant.rating" active-color="warning" color="warning" readonly
             empty-icon="mdi-star-outline" full-icon="mdi-star" half-increments :size="30" length="10"></v-rating>
 
-        <v-card-text>Description about restaurant</v-card-text>
-        <div class="d-flex">
-            <v-btn class=" w-30 mb-2" variant="text" v-on:click="() => favorite = !favorite">Theo dõi
-                <v-icon end :icon="setFavoriteIcon"></v-icon>
+        <v-card-text class="d-flex align-center gap-2 text-body-1">Thời gian: <v-icon icon="mdi-clock-outline"></v-icon>{{
+            props.restaurant.open }} - <v-icon icon="mdi-clock-outline"></v-icon>{{ props.restaurant.close }}</v-card-text>
+        <v-card-text class="d-flex align-center gap-2 text-body-1">Số điện thoại : {{ props.restaurant.userId.numberPhone
+        }}</v-card-text>
+        <v-card-text class="d-flex align-center text-body-1">Hiện tại : {{ status }}</v-card-text>
+        <v-card-text class="d-flex align-center text-body-1">Địa chỉ : {{ props.restaurant.displayName }}</v-card-text>
+        <v-divider></v-divider>
+        <v-card-text class="text-body-1">{{ props.restaurant.description }}</v-card-text>
+        <v-divider></v-divider>
+        <div class="d-flex mt-2">
+            <v-btn class=" w-30 mb-2" v-if="!follow" variant="text" v-on:click="handleFollow(props.restaurant._id)">
+                Follow
+                <v-icon end icon="mdi-plus"></v-icon>
+            </v-btn>
+            <v-btn class=" w-30 mb-2" v-if="follow" variant="text" v-on:click="handleUnfollow(props.restaurant._id)">
+                Unfollow
+                <v-icon end icon="mdi-heart" color="error"></v-icon>
             </v-btn>
             <v-btn class="w-30 mb-2" variant="text" @click="() => { router.push('/review/create/restaurantId') }">Đánh giá
                 <v-icon end icon="mdi-pencil"></v-icon>
             </v-btn>
-            <v-btn class="w-30 mb-2" variant="text" @click="$emit('onDirect')">Chỉ đường
+            <v-btn class="w-30 mb-2" variant="text" @click="$emit('onD  irect')">Chỉ đường
                 <v-icon end icon="mdi-directions"></v-icon>
             </v-btn>
         </div>
@@ -49,9 +108,7 @@ const setFavoriteIcon = computed(() => {
         <v-card-item>
             <v-window v-model="tab">
                 <v-window-item value="post">
-                    <PostCard></PostCard>
-                    <PostCard></PostCard>
-                    <PostCard></PostCard>
+                    <PostCard v-for="item in post" :post="item"></PostCard>
                 </v-window-item>
                 <v-window-item value="review">
                     <ReviewCard></ReviewCard>

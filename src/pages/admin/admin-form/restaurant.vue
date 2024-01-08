@@ -1,7 +1,20 @@
 <script setup>
+import { getConsiderRestaurantAdmin } from '@/services/axios/api/api';
+import { reactive } from 'vue';
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
+const data = reactive([])
+
+getConsiderRestaurantAdmin().then(res => {
+    console.log(res.data.data[0]);
+    res.data.data.forEach(item => {
+        data.push(item)
+    })
+}).catch(err => {
+    console.log(err);
+})
 
 </script>
 
@@ -31,26 +44,23 @@ const router = useRouter()
             </thead>
 
             <tbody>
-                <tr>
+                <tr v-for="item in data">
                     <td>
-                        Nguyen Van A
+                        {{ item.userId.userName }}
                     </td>
                     <td>
-                        User@gmail.com
+                        {{ item.userId.email }}
                     </td>
                     <td>
-                        012345678
+                        {{ item.userId.numberPhone }}
                     </td>
                     <td class="text-center">
-                        <v-btn variant="text" @click="() => router.push(`/admin/forms/123xz/restaurant`)"> ABCXYZ</v-btn>
+                        {{ item.restaurantName }}
                     </td>
                     <td class="text-center">
-                        <div class="d-flex flex-row">
-                            <v-btn variant="text" color="error">Từ chối</v-btn>
-                            <v-btn variant="text">Xác nhận</v-btn>
-                        </div>
+                        <v-btn variant="text" @click="() => router.push(`/admin/forms/${item._id}/restaurant`)">
+                            Xem</v-btn>
                     </td>
-
                 </tr>
             </tbody>
         </VTable>

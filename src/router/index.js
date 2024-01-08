@@ -1,5 +1,4 @@
-import { Roles, getRoleUser } from '@/helpers/roles'
-import { useTokenStore } from '@/stores/token'
+
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -65,11 +64,6 @@ const router = createRouter({
           component: () => import('../pages/restaurant/post-create.vue'),
         },
         {
-          path: 'owner/post/:postId',
-          component: () => import('../pages/restaurant/post-update.vue'),
-        },
-
-        {
           path: 'owner/consisder',
           component: () => import('../pages/restaurant/consisder.vue'),
         },
@@ -87,7 +81,7 @@ const router = createRouter({
           component: () => import('../pages/admin/admin-form/form-manage.vue'),
         },
         {
-          path: 'admin/forms/:formId/restaurant',
+          path: 'admin/forms/:restaurantId/restaurant',
           component: () => import('../pages/admin/admin-form/restaurant-form.vue'),
         },
         {
@@ -136,47 +130,47 @@ const router = createRouter({
 })
 
 
-const authPath = ['/login', '/register', '/forget']
+// const authPath = ['/login', '/register', '/forget']
 
-router.beforeEach((to, from) => {
-  const role = getRoleUser()
-  console.log(role);
-  document.title = to.meta?.title ?? 'Default'
-  if (authPath.includes(to.path)) {
-    if (useTokenStore().accessToken != null) {
-      alert('Bạn đã đăng nhập!!')
-      router.push('/home')
-      return
-    }
-  }
-  if (to.path.startsWith('/admin')) {
-    if (role !== Roles.ADMIN) {
-      router.push('/home')
-      alert('Bạn không có quyền truy cập!!')
-      return
-    }
-  }
+// router.beforeEach((to, from) => {
+//   const role = getRoleUser()
+//   console.log(role);
+//   document.title = to.meta?.title ?? 'Default'
+//   if (authPath.includes(to.path)) {
+//     if (useTokenStore().accessToken != null) {
+//       alert('Bạn đã đăng nhập!!')
+//       router.push('/home')
+//       return
+//     }
+//   }
+//   if (to.path.startsWith('/admin')) {
+//     if (role !== Roles.ADMIN) {
+//       router.push('/home')
+//       alert('Bạn không có quyền truy cập!!')
+//       return
+//     }
+//   }
 
-  if (to.path.startsWith('/owner')) {
-    if (role !== Roles.OWNER) {
-      router.push('/home')
-      alert('Bạn không có quyền truy cập!!')
-      return
-    }
-  }
-  if (to.path.startsWith('/upgrade')) {
-    if (role !== Roles.USER) {
-      router.push('/home')
-      alert('Bạn không có quyền truy cập!!')
-      return
-    }
-  }
-  if (to.path.startsWith('/account')) {
-    if (role === Roles.GUEST) {
-      router.push('/home')
-      return
-    }
-  }
-})
+//   if (to.path.startsWith('/owner')) {
+//     if (role !== Roles.OWNER) {
+//       router.push('/home')
+//       alert('Bạn không có quyền truy cập!!')
+//       return
+//     }
+//   }
+//   if (to.path.startsWith('/upgrade')) {
+//     if (role !== Roles.USER) {
+//       router.push('/home')
+//       alert('Bạn không có quyền truy cập!!')
+//       return
+//     }
+//   }
+//   if (to.path.startsWith('/account')) {
+//     if (role === Roles.GUEST) {
+//       router.push('/home')
+//       return
+//     }
+//   }
+// })
 
 export default router

@@ -1,9 +1,10 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { Roles, getRoleUser } from '@/helpers/roles';
+import { Roles } from '@/helpers/roles';
 import { useTokenStore } from '@/stores/token';
 import { useUserStore } from '@/stores/user';
 import { validatePassword } from '@/helpers/validate';
+import { changePassword } from '@/services/axios/api/api'
 
 const tokenStore = useTokenStore()
 const userStore = useUserStore()
@@ -17,7 +18,7 @@ let passwordInvalid = ref(false)
 
 const isChangePassword = ref(false)
 
-const role = getRoleUser()
+
 
 const handleLogOut = () => {
     tokenStore.deleteToken()
@@ -58,13 +59,27 @@ const handleChangePassword = () => {
         return
     }
 
+
+    changePassword(form.currentPassword, form.newPassword)
+        .then(res => {
+            console.log(res);
+            snackbar.value = true
+            snackbarText.value = "Đổi mật khẩu thành công"
+        }).catch(err => {
+            const code = err.response.status
+            if (code === 401 || code === 400) {
+                snackbar.value = true
+                snackbarText.value = "Nhập mật khẩu không đúng!"
+                passwordInvalid.value = true
+            }
+        })
 }
 
 </script>
 
 <template>
     <VRow>
-        <VCol v-if="role !== Roles.ADMIN" cols="10" class="ml-16 mt-16">
+        <VCol v-if="userStore.user.role !== Roles.ADMIN" cols="10" class="ml-16 mt-16">
             <VCard title="ĐỔI MẬT KHẨU">
 
 

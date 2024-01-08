@@ -48,10 +48,8 @@ const handleLogIn = () => {
   login(form.email, form.password).then(res => {
     const response = res.data
     useToken.setToken(response.data.accessToken)
-    return getUserProfile(response.data.accessToken)
-  }).then(res => {
-    const user = res.data.data
-    userStore.setUser(user)
+    userStore.setUser(response.data.user)
+
     router.push('/home')
   }).catch(err => {
     console.log(err);

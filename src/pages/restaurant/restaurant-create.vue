@@ -1,9 +1,12 @@
 <script setup>
 import MapLeaf from '@/components/MapLeaf.vue';
-import { computed } from 'vue';
-import { reactive } from 'vue';
-import { ref } from 'vue'
+import { computed, reactive, ref } from 'vue';
+import { createRestaurant } from '@/services/axios/api/api'
+import { useToastStore } from '@/stores/toast';
 
+const toast = useToastStore()
+
+const loading = ref(false)
 
 const rules = [
     value => {
@@ -15,37 +18,68 @@ const image = ref('')
 
 const previewFiles = (event) => {
     const file = event.target.files[0];
-    console.log(event.target.files[0]);
+    data.image = file
     const theReader = new FileReader();
-
     theReader.onloadend = async () => {
         image.value = await theReader.result;
     };
     theReader.readAsDataURL(file);
-
-
 }
-
-
-const lat_lng = reactive({
-    lat: null,
-    lng: null,
-    display_name: ''
-})
 
 
 const onClickMap = (e) => {
     console.log(e);
-    lat_lng.lat = e.latlng.lat
-    lat_lng.lng = e.latlng.lng
+    data.lat = e.latlng.lat
+    data.lng = e.latlng.lng
 }
 
 const locationString = computed(() => {
-    if (lat_lng.lat == null || lat_lng.lng == null) return ""
-    return `${lat_lng.lat}, ${lat_lng.lng}`
+    if (data.lat == null || data.lng == null) return ""
+    return `${data.lat}, ${data.lng}`
 })
 
 
+
+const data = reactive({
+    restaurantName: null,
+    description: null,
+    open: null,
+    close: null,
+    inWeek: [],
+    lat: null,
+    lng: null,
+    image: null,
+    displayName: null,
+})
+
+
+let confirmSubmit = ref(false)
+
+const handleSubmit = () => {
+    loading.value = true
+    const formData = new FormData()
+    formData.append("restaurantName", data.restaurantName)
+    formData.append("description", data.description)
+    formData.append("open", data.open)
+    formData.append("close", data.close)
+    formData.append("inWeek", data.inWeek)
+
+    formData.append("displayName", data.displayName)
+    formData.append("lat", data.lat)
+    formData.append("lng", data.lng)
+
+    formData.append("thumbnail", data.image)
+
+    createRestaurant(formData).then(res => {
+        console.log(res);
+        toast.openToast('Yêu cầu của bạn đã được gửi tới Admin')
+        loading.value = false
+    }).catch(err => {
+        console.log(err);
+        toast.openToast('Có lỗi xảy ra!!')
+        loading.value = false
+    })
+}
 
 </script>
 
@@ -58,7 +92,7 @@ const locationString = computed(() => {
                     <VForm class="mt-4">
                         <VRow>
                             <VCol cols="12">
-                                <VTextField label="TÊN CỬA HÀNG" />
+                                <VTextField label="TÊN CỬA HÀNG" v-model="data.restaurantName" />
                             </VCol>
 
 
@@ -69,10 +103,10 @@ const locationString = computed(() => {
 
 
                             <VCol cols="5">
-                                <v-text-field label="GIỜ MỞ CỬA" type="time"></v-text-field>
+                                <v-text-field label="GIỜ MỞ CỬA" type="time" v-model="data.open"></v-text-field>
                             </VCol>
                             <VCol cols="5">
-                                <v-text-field label="GIỜ ĐÓNG CỬA" type="time"></v-text-field>
+                                <v-text-field label="GIỜ ĐÓNG CỬA" type="time" v-model="data.close"></v-text-field>
                             </VCol>
 
 
@@ -83,14 +117,20 @@ const locationString = computed(() => {
 
                             <VCol cols="12">
                                 <div class="d-flex flex-row flex-wrap">
-                                    <v-checkbox class="ml-6" label="Thứ Hai"></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Thứ Ba"></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Thứ Tư"></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Thứ Năm"></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Thứ Sáu"></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Thứ Bảy"></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Chủ Nhật"></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Tất cả"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Hai" value="Monday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Ba" value="Tuesday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Tư" value="Wednesday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Năm" value="Thursday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Sáu" value="Friday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Bảy" value="Saturday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Chủ Nhật" value="Sunday"
+                                        v-model="data.inWeek"></v-checkbox>
                                 </div>
 
                             </VCol>
@@ -103,7 +143,7 @@ const locationString = computed(() => {
 
 
                             <VCol cols="12">
-                                <VTextarea clearable no-resize rows="5" label="MÔ TẢ" />
+                                <VTextarea clearable no-resize rows="5" label="MÔ TẢ" v-model="data.description" />
                             </VCol>
 
                             <VCol cols="12">
@@ -112,7 +152,7 @@ const locationString = computed(() => {
 
 
                             <VCol cols="12">
-                                <v-file-input class="w-50" :rules="rules" accept="image/png, image/jpeg, image/bmp"
+                                <v-file-input class="w-50" :rules="rules" accept="image/png, image/jpg"
                                     placeholder="Thumbnail" prepend-icon="mdi-camera" label="Thumbnail"
                                     @change="previewFiles($event)" @click:clear="() => {
                                         image = ''
@@ -145,7 +185,7 @@ const locationString = computed(() => {
 
                             </VCol>
                             <VCol cols="6">
-                                <VTextField label="ĐỊA CHỈ" hint="Địa chỉ hiển thị trên app" />
+                                <VTextField label="ĐỊA CHỈ" hint="Địa chỉ hiển thị trên app" v-model="data.displayName" />
 
                             </VCol>
 
@@ -155,10 +195,12 @@ const locationString = computed(() => {
                             </VCol>
 
                             <VCol cols="12" class="d-flex flex-column">
-                                <v-checkbox class="m-4 w-25" color="error" label="Xác nhận tạo cửa hàng">
+                                <v-checkbox class="m-4 w-25" color="error" label="Xác nhận tạo cửa hàng"
+                                    v-model="confirmSubmit">
 
                                 </v-checkbox>
-                                <VBtn class="mt-4" width="100px" color="success">
+                                <VBtn :loading="loading" class="mt-4" width="100px" color="success"
+                                    :disabled="!confirmSubmit" @click="handleSubmit">
                                     Tạo
                                 </VBtn>
 
@@ -168,5 +210,5 @@ const locationString = computed(() => {
                 </VCardItem>
             </VCard>
         </VCol>
-    </VRow>
+    </VRow>Row>
 </template>

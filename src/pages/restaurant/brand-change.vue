@@ -1,6 +1,30 @@
 <script setup>
+import { useUserStore } from '@/stores/user';
+import { useToastStore } from '@/stores/toast';
+import { changeBrand } from '@/services/axios/api/api'
 
-const name = ref('BRAND NAME')
+const toast = useToastStore()
+const userStore = useUserStore()
+const newName = ref(userStore.user.brandName)
+
+
+const handChangeBrand = () => {
+    if (newName.value == userStore.user.brandName) {
+        toast.openToast('Tên mới phải khác tên cũ!')
+        return
+    }
+    if (!newName.value || !newName.value.length) {
+        toast.openToast('Tên không hợp lệ!')
+        return
+    }
+
+    changeBrand(newName.value).then(res => {
+        console.log(res);
+    }).catch(err => {
+        console.log(err);
+    })
+
+}
 
 </script>
 
@@ -16,11 +40,11 @@ const name = ref('BRAND NAME')
                         <VRow>
 
                             <VCol cols="10">
-                                <VTextField label="TÊN HIỆN TẠI" v-model="name" disabled />
+                                <VTextField label="TÊN HIỆN TẠI" v-model="userStore.user.brandName" readonly />
                             </VCol>
 
                             <VCol cols="10">
-                                <VTextField label="TÊN MỚI" v-model="name" />
+                                <VTextField label="TÊN MỚI" v-model="newName" />
                             </VCol>
 
 
@@ -40,12 +64,15 @@ const name = ref('BRAND NAME')
                                                 <v-spacer></v-spacer>
 
                                                 <v-btn text="Đóng" @click="isActive.value = false"></v-btn>
-                                                <v-btn text="Xác nhận"></v-btn>
+                                                <v-btn text="Xác nhận" color="success" @click="() => {
+                                                    handChangeBrand()
+                                                    isActive.value = false
+                                                }"></v-btn>
                                             </v-card-actions>
                                         </v-card>
                                     </template>
                                 </v-dialog>
-                                <VBtn class="w-50" color="error">Hủy </VBtn>
+                                <VBtn class="w-50" color="error" @click="newName = userStore.user.brandName">Hủy</VBtn>
 
                             </VCol>
                         </VRow>

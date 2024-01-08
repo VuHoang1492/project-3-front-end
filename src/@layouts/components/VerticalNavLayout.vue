@@ -87,11 +87,11 @@ export default defineComponent({
   }
 
   .layout-navbar {
-    z-index: 100;
+    z-index: 1;
     position: absolute;
     top: 0;
     right: 0;
-    z-index: 10000;
+
     width: 48px;
     height: 48px;
     padding: 0 !important;

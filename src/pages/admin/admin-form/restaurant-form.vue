@@ -1,12 +1,67 @@
 <script setup>
 import MapLeaf from '@/components/MapLeaf.vue';
-import { computed } from 'vue';
+import { getRestaurantByIdForAdmin, processRestaurant } from '@/services/axios/api/api';
 import { reactive } from 'vue';
-import { ref } from 'vue'
+
+import { useToastStore } from '@/stores/toast';
+import { useRoute } from 'vue-router';
 
 
+const route = useRoute()
+
+const toast = useToastStore()
 
 
+const data = reactive({
+    restaurantName: null,
+    description: null,
+    open: null,
+    close: null,
+    user: { userName: null, brandName: null, numberPhone: null, email: null },
+    inWeek: [],
+    lat: null,
+    lng: null,
+    image: null,
+    displayName: null,
+})
+
+let init_point = reactive({ lat: null, lng: null })
+
+getRestaurantByIdForAdmin(route.params.restaurantId).then(res => {
+    console.log(res);
+    data.restaurantName = res.data.data.restaurantName
+    data.description = res.data.data.description
+    data.open = res.data.data.open
+    data.close = res.data.data.close
+
+    data.user = res.data.data.userId
+
+    console.log(data.user.userName);
+
+    data.lat = res.data.data.lat
+    data.lng = res.data.data.lng
+    data.displayName = res.data.data.displayName
+    data.inWeek = res.data.data.inWeek.split(',')
+
+
+    data.image = res.data.data.thumbnail
+
+    init_point.lat = data.lat
+    init_point.lng = data.lng
+}).catch(err => {
+    console.log(err);
+})
+
+const handleProcess = (action, restaurantId) => {
+    processRestaurant({ action: action, restaurantId: restaurantId })
+        .then(res => { console.log(res); })
+        .catch(err => { console.log(err); })
+}
+
+const locationString = computed(() => {
+    if (data.lat == null || data.lng == null) return ""
+    return `${data.lat}, ${data.lng}`
+})
 </script>
 
 <template>
@@ -18,7 +73,7 @@ import { ref } from 'vue'
                     <VForm class="mt-4">
                         <VRow>
                             <VCol cols="12">
-                                <VTextField label="Người Sở Hữu" disabled />
+                                <VTextField label="Người Sở Hữu" readonly v-model="data.user.userName" />
                             </VCol>
 
 
@@ -26,7 +81,7 @@ import { ref } from 'vue'
                                 <VDivider></VDivider>
                             </VCol>
                             <VCol cols="12">
-                                <VTextField label="Email" disabled />
+                                <VTextField label="Email" readonly v-model="data.user.email" />
                             </VCol>
 
 
@@ -34,7 +89,7 @@ import { ref } from 'vue'
                                 <VDivider></VDivider>
                             </VCol>
                             <VCol cols="12">
-                                <VTextField label="Số Điện Thoại" disabled />
+                                <VTextField label="Số Điện Thoại" readonly v-model="data.user.numberPhone" />
                             </VCol>
 
 
@@ -42,7 +97,7 @@ import { ref } from 'vue'
                                 <VDivider></VDivider>
                             </VCol>
                             <VCol cols="12">
-                                <VTextField label="Thương Hiệu" disabled />
+                                <VTextField label="Thương Hiệu" readonly v-model="data.user.brandName" />
                             </VCol>
 
 
@@ -50,7 +105,7 @@ import { ref } from 'vue'
                                 <VDivider></VDivider>
                             </VCol>
                             <VCol cols="12">
-                                <VTextField label="Tên Cửa Hàng" disabled />
+                                <VTextField label="Tên Cửa Hàng" readonly v-model="data.restaurantName" />
                             </VCol>
 
 
@@ -61,10 +116,10 @@ import { ref } from 'vue'
 
 
                             <VCol cols="5">
-                                <v-text-field label="GIỜ MỞ CỬA" type="time" disabled></v-text-field>
+                                <v-text-field label="GIỜ MỞ CỬA" type="time" readonly v-model="data.open"></v-text-field>
                             </VCol>
                             <VCol cols="5">
-                                <v-text-field label="GIỜ ĐÓNG CỬA" type="time" disabled></v-text-field>
+                                <v-text-field label="GIỜ ĐÓNG CỬA" type="time" readonly v-model="data.close"></v-text-field>
                             </VCol>
 
 
@@ -75,14 +130,20 @@ import { ref } from 'vue'
 
                             <VCol cols="12">
                                 <div class="d-flex flex-row flex-wrap">
-                                    <v-checkbox class="ml-6" label="Thứ Hai" disabled></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Thứ Ba" disabled></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Thứ Tư" disabled></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Thứ Năm" disabled></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Thứ Sáu" disabled></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Thứ Bảy" disabled></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Chủ Nhật" disabled></v-checkbox>
-                                    <v-checkbox class="ml-6" label="Tất cả" disabled></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Hai" readonly value="Monday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Ba" readonly value="Tuesday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Tư" readonly value="Wednesday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Năm" readonly value="Thursday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Sáu" readonly value="Friday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Thứ Bảy" readonly value="Saturday"
+                                        v-model="data.inWeek"></v-checkbox>
+                                    <v-checkbox class="ml-6" label="Chủ Nhật" readonly value="Sunday"
+                                        v-model="data.inWeek"></v-checkbox>
                                 </div>
 
                             </VCol>
@@ -95,7 +156,7 @@ import { ref } from 'vue'
 
 
                             <VCol cols="12">
-                                <VTextarea clearable no-resize rows="5" label="MÔ TẢ" disabled />
+                                <VTextarea clearable no-resize rows="5" label="MÔ TẢ" readonly v-model="data.description" />
                             </VCol>
 
                             <VCol cols="12">
@@ -106,7 +167,7 @@ import { ref } from 'vue'
 
 
                             <VCol cols="12">
-                                img
+                                <v-img class="ma-auto" :width="300" aspect-ratio="16/9" cover :src="data.image" />
                             </VCol>
 
                             <VCol cols="12">
@@ -116,16 +177,16 @@ import { ref } from 'vue'
 
 
                             <VCol cols="6">
-                                <VTextField label="TỌA ĐỘ" disabled />
+                                <VTextField label="TỌA ĐỘ" readonly v-model="locationString" />
 
                             </VCol>
                             <VCol cols="6">
-                                <VTextField label="ĐỊA CHỈ" disabled />
+                                <VTextField label="ĐỊA CHỈ" readonly v-model="data.displayName" />
 
                             </VCol>
                             <VCol cols="12">
-                                <div style="height: 500px;">
-                                    <MapLeaf :allow_click_map="false" :geocoder="false" />
+                                <div style="height: 500px;" v-if="init_point.lat != null && init_point.lng != null">
+                                    <MapLeaf :allow_click_map="false" :geocoder="false" :init_point="init_point" />
                                 </div>
                             </VCol>
 
@@ -134,16 +195,61 @@ import { ref } from 'vue'
                             </VCol>
 
                             <VCol cols="12" class="d-flex flex-column">
-                                <v-checkbox class="m-4 w-25" color="error" label="Xác nhận tạo cửa hàng">
-                                </v-checkbox>
 
                                 <div class="d-flex flex-row mt-4">
-                                    <VBtn class="mr-4" width="100px" color="success">
-                                        Xác nhận
-                                    </VBtn>
-                                    <VBtn class="mr-4" width="100px" color="error">
-                                        Từ chối
-                                    </VBtn>
+                                    <v-dialog width="500">
+                                        <template v-slot:activator="{ props }">
+                                            <v-btn v-bind="props" variant="text" color="success">Chấp nhận </v-btn>
+                                        </template>
+
+                                        <template v-slot:default="{ isActive }">
+                                            <v-card title="Xác nhận">
+                                                <v-card-text>
+                                                    Xác nhận
+                                                </v-card-text>
+
+                                                <v-card-actions>
+                                                    <v-spacer></v-spacer>
+
+                                                    <v-btn text="Đóng" @click="isActive.value = false"></v-btn>
+                                                    <VBtn class="mr-4" variant="text" width="100px" color="success" @click="() => {
+                                                        isActive.value = false
+                                                        handleProcess('ACCEPT', route.params.restaurantId)
+                                                    }">
+                                                        Xác nhận
+                                                    </VBtn>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </template>
+                                    </v-dialog>
+
+                                    <v-dialog width="500">
+                                        <template v-slot:activator="{ props }">
+                                            <v-btn v-bind="props" variant="text" color="error">Từ chối </v-btn>
+                                        </template>
+
+                                        <template v-slot:default="{ isActive }">
+                                            <v-card title="Xác nhận">
+                                                <v-card-text>
+                                                    Từ chối
+                                                </v-card-text>
+
+                                                <v-card-actions>
+                                                    <v-spacer></v-spacer>
+
+                                                    <v-btn text="Đóng" @click="isActive.value = false"></v-btn>
+                                                    <v-btn class="mr-4" variant="text" width="100px" color="error" @click="() => {
+                                                        isActive.value = false
+                                                        handleProcess('DENIED', route.params.restaurantId)
+                                                    }">
+                                                        Từ chối
+                                                    </v-btn>
+                                                </v-card-actions>
+                                            </v-card>
+                                        </template>
+                                    </v-dialog>
+
+
                                 </div>
 
                             </VCol>

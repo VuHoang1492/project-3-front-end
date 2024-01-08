@@ -2,23 +2,38 @@
 import RestaurantCard from '@/views/card/RestaurantCard.vue'
 import { useRouter } from 'vue-router';
 import { onBeforeUnmount, onMounted } from "vue"
-
+import { getAllRestaurant } from '@/services/axios/api/api';
+import { reactive } from 'vue';
+import { useUserStore } from '@/stores/user';
 
 const router = useRouter()
+const userStore = useUserStore()
 
-function logScroll() {
-    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
+// function logScroll() {
+//     if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
 
-    }
-}
+//     }
+// }
 
-onMounted(() => {
-    window.addEventListener('scroll', logScroll)
+// onMounted(() => {
+//     window.addEventListener('scroll', logScroll)
+// })
+
+// onBeforeUnmount(() => {
+//     window.removeEventListener('scroll', logScroll)
+// })  
+
+
+
+const data = reactive([])
+getAllRestaurant().then(res => {
+    res.data.data.forEach(item => {
+        data.push(item)
+    })
+}).catch(err => {
+    console.log(err);
 })
 
-onBeforeUnmount(() => {
-    window.removeEventListener('scroll', logScroll)
-})  
 </script>
 
 <template>
@@ -29,7 +44,7 @@ onBeforeUnmount(() => {
                 <div>
                     <div class="d-flex flex-row mb-6">
                         <p class="font-italic text-2xl ma-auto ml-1 mr-1">
-                            BRAND NAME
+                            {{ userStore.user.brandName }}
                         </p>
 
                     </div>
@@ -56,11 +71,7 @@ onBeforeUnmount(() => {
                 </div>
             </div>
 
-            <RestaurantCard></RestaurantCard>
-            <RestaurantCard></RestaurantCard>
-            <RestaurantCard></RestaurantCard>
-            <RestaurantCard></RestaurantCard>
-            <RestaurantCard></RestaurantCard>
+            <RestaurantCard v-for="item in data" :restaurant_data="item"></RestaurantCard>
         </VCol>
     </VRow>
 </template>

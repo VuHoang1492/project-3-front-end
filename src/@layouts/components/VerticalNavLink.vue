@@ -4,23 +4,16 @@ const props = defineProps({
     type: null,
     required: true,
   },
+
 })
+
+
 </script>
 
 <template>
-  <li
-    class="nav-link"
-    :class="{ disabled: item.disable }"
-  >
-    <Component
-      :is="item.to ? 'RouterLink' : 'a'"
-      :to="item.to"
-      :href="item.href"
-    >
-      <VIcon
-        :icon="item.icon"
-        class="nav-item-icon"
-      />
+  <li class="nav-link" :class="{ disabled: item.disable }">
+    <Component :is="item.to ? 'RouterLink' : 'a'" :to="item.to" :href="item.href">
+      <v-icon :icon="item.icon" class="nav-item-icon" />
       <!-- 👉 Title -->
       <span class="nav-item-title">
         {{ item.title }}

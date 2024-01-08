@@ -15,7 +15,7 @@ const restaurantData = reactive({ restaurant: null, show: false })
 const onClickMap = (e) => {
   getRestaurantNearby(e.latlng.lat, e.latlng.lng).then(res => {
     restaurant_nearby.splice(0, restaurant_nearby.length)
-    restaurant_nearby.push(...res)
+    restaurant_nearby.push(...res.data.data)
   })
   router.push({ path: route.path, query: { lat: e.latlng.lat, lng: e.latlng.lng } })
 }
@@ -26,13 +26,13 @@ const onClickRestaurant = (item) => {
   restaurantData.show = true
   allow_click_map = false
   _find_round = false
-  router.push({ path: route.path, query: { ...route.query, restaurantId: item.id } })
+  router.push({ path: route.path, query: { ...route.query, restaurantId: item._id } })
 }
 
 const onClickHint = (hint) => {
   getRestaurantNearby(hint.lat, hint.lon).then(res => {
     restaurant_nearby.splice(0, restaurant_nearby.length)
-    restaurant_nearby.push(...res)
+    restaurant_nearby.push(...res.data.data)
   })
   router.push({ path: route.path, query: { lat: hint.lat, lng: hint.lon, qs: hint.display_name, } })
 }
@@ -49,15 +49,16 @@ const closeRestaurantCard = () => {
 const findAround = (user_lat, user_lng) => {
   getRestaurantNearby(user_lat, user_lng).then(res => {
     restaurant_nearby.splice(0, restaurant_nearby.length)
-    restaurant_nearby.push(...res)
+    restaurant_nearby.push(...res.data.data)
   })
   router.push({ path: route.path, query: null })
 }
 
 const onDirect = () => {
-  destination.name = restaurantData.restaurant.name
+  destination.id = restaurantData.restaurant._id
+  destination.name = restaurantData.restaurant.restaurantName
   destination.lat = restaurantData.restaurant.lat
-  destination.lng = restaurantData.restaurant.lon
+  destination.lng = restaurantData.restaurant.lng
   restaurantData.show = false
   router.push({ path: route.path, query: { ...route.query, direct: true } })
 }
@@ -92,15 +93,15 @@ if (route.query.lat && route.query.lng) {
 
 if (route.query.restaurantId) {
   getRestaurantById(route.query.restaurantId).then(res => {
-    onClickRestaurant(res)
-    restaurant_nearby.push(res)
-
-
+    console.log(res);
+    onClickRestaurant(res.data.data)
+    restaurant_nearby.push(res.data.data)
     if (route.query.direct) {
       console.log(restaurantData);
-      destination.name = restaurantData.restaurant.name
+      destination.id = restaurantData.restaurant._id
+      destination.name = restaurantData.restaurant.restaurantName
       destination.lat = restaurantData.restaurant.lat
-      destination.lng = restaurantData.restaurant.lon
+      destination.lng = restaurantData.restaurant.lng
       restaurantData.show = false
     }
 
