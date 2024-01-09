@@ -12,9 +12,8 @@ import { useNotificationStore } from '@/stores/notification'
 
 const userStore = useUserStore()
 
-let role = Roles.GUEST
-if (userStore.user)
-  role = userStore.user.role
+
+const role = userStore.user.role
 
 console.log(role);
 const notification = useNotificationStore()
@@ -152,4 +151,6 @@ listenerNoti.onmessage = mes => {
   border-radius: 8px;
   opacity: .8;
 }
+
+
 </style>

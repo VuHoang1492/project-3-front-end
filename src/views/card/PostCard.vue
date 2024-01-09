@@ -1,6 +1,5 @@
 <script setup>
 import { reactive } from 'vue';
-import { deletePost } from '@/services/axios/api/api'
 import { useToastStore } from '@/stores/toast';
 
 
@@ -43,7 +42,7 @@ const clickCtrlRight = () => {
 
 const create = () => {
     const date = new Date(props.post.createdAt)
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} - ${date.getHours()}h:${date.getMinutes()}m`
 }
 
 const handleDeletePost = () => {
@@ -63,9 +62,10 @@ const handleDeletePost = () => {
         <v-card-text class="text-h5 font-weight-medium  pb-2" width="100%">
             {{ props.post.title }}
         </v-card-text>
-        <v-card-text class="d-flex align-center gap-2 text-overline pb-2 ml-4"><v-icon icon="mdi-clock-outline"></v-icon>{{
-            create()
-        }}</v-card-text>
+        <v-card-text class="d-flex align-center gap-1 text-overline pb-2 ml-4 font-italic"><v-icon
+                icon="mdi-clock-outline"></v-icon>{{
+                    create()
+                }}</v-card-text>
         <v-card-text class="description"> {{ props.post.description }}</v-card-text>
 
         <div class="media-file">
@@ -144,7 +144,7 @@ const handleDeletePost = () => {
     right: 0;
     left: 0;
     background: #111;
-    z-index: 100000;
+    z-index: 1002;
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
 

@@ -1,3 +1,4 @@
+import { Roles } from '@/helpers/roles'
 import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', {
@@ -11,7 +12,7 @@ export const useUserStore = defineStore('user', {
         },
 
         deleteUser() {
-            this.user = null
+            this.user = { role: Roles.GUEST }
         }
     },
 })

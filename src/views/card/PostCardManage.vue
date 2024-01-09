@@ -43,7 +43,7 @@ const clickCtrlRight = () => {
 
 const create = () => {
     const date = new Date(props.post.createdAt)
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} - ${date.getHours()}h:${date.getMinutes()}m`
 }
 
 const handleDeletePost = () => {
@@ -63,9 +63,10 @@ const handleDeletePost = () => {
         <v-card-text class="text-h5 font-weight-medium  pb-2" width="100%">
             {{ props.post.title }}
         </v-card-text>
-        <v-card-text class="d-flex align-center gap-2 text-overline pb-2"><v-icon icon="mdi-clock-outline"></v-icon>{{
-            create()
-        }}</v-card-text>
+        <v-card-text class="d-flex align-center gap-1 text-overline pb-2 font-italic"><v-icon
+                icon="mdi-clock-outline"></v-icon>{{
+                    create()
+                }}</v-card-text>
         <v-card-text> {{ props.post.description }}</v-card-text>
 
         <div class="media-file">

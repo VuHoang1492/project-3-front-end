@@ -29,3 +29,10 @@ export const SearchSymbol = L.icon({
     // popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
 
+
+export const BlankIcon = L.icon({
+    iconUrl: '/icons/search-location.png',
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+});
+

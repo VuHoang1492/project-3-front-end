@@ -181,6 +181,22 @@ export const getRestaurantByIdForAdmin = (id) => {
     return instanceApiData.get(`/admin/restaurant/${id}`)
 }
 
+export const getAllBrand = () => {
+    return instanceApiData.get('/admin/brand/get-all')
+}
+
+export const adminCreateRestaurant = (data) => {
+    return instanceApiData({
+        method: "post",
+        url: "/admin/bulk/resrautant/create",
+        data: data,
+        headers: { "Content-Type": "multipart/form-data" },
+    })
+}
+
+export const getAllRestaurantOfOnwer = (id) => {
+    return instanceApiData.get(`/admin/restaurant-owner?id=${id}`)
+}
 //Post
 export const createPost = (data) => {
     return instanceApiData({
@@ -198,4 +214,19 @@ export const getPostByRestaurant = (id) => {
 
 export const deletePost = (id) => {
     return instanceApiData.delete(`/post/delete/${id}`)
+}
+
+//Review
+export const createReview = (data) => {
+    return instanceApiData({
+        method: "post",
+        url: "/review/create",
+        data: data,
+        headers: { "Content-Type": "multipart/form-data" },
+    })
+}
+
+export const getReviewBrRestaurant = (id) => {
+    console.log(id);
+    return instanceApiData.get(`/review/get-by-restaurant?restaurantId=${id}`)
 }

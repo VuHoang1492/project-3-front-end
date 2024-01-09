@@ -5,12 +5,15 @@ import { useTokenStore } from './stores/token';
 import { useUserStore } from './stores/user';
 import { getUserProfile } from '@/services/axios/api/api'
 import { useToastStore } from './stores/toast';
+import { Roles } from '@/helpers/roles'
 
 const toast = useToastStore()
+
 
 useGeolocation()
 
 const userStore = useUserStore()
+
 const tokenStore = useTokenStore()
 
 if (tokenStore.accessToken) {
@@ -23,6 +26,8 @@ if (tokenStore.accessToken) {
     userStore.deleteUser()
     router.push('/login')
   })
+} else {
+  userStore.setUser({ role: Roles.GUEST })
 }
 
 

@@ -7,6 +7,7 @@ import { useToastStore } from '@/stores/toast';
 import { useRoute } from 'vue-router';
 
 
+
 const route = useRoute()
 
 const toast = useToastStore()
@@ -54,8 +55,8 @@ getRestaurantByIdForAdmin(route.params.restaurantId).then(res => {
 
 const handleProcess = (action, restaurantId) => {
     processRestaurant({ action: action, restaurantId: restaurantId })
-        .then(res => { console.log(res); })
-        .catch(err => { console.log(err); })
+        .then(res => { console.log(res); toast.openToast('Hành động thành công!') })
+        .catch(err => { console.log(err); toast.openToast('Có lỗi xảy ra!') })
 }
 
 const locationString = computed(() => {

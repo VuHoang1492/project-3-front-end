@@ -5,7 +5,7 @@ import 'leaflet-routing-machine'
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
 import axios from 'axios'
 import { onMounted, computed, ref, watch, reactive } from 'vue';
-import { UserPositionSymbol, RestaurantSymbol, SearchSymbol } from './map-icons/MapIcon'
+import { UserPositionSymbol, RestaurantSymbol, SearchSymbol, BlankIcon } from './map-icons/MapIcon'
 import { getLocationByLatlng } from '@/services/axios/map/MapAxiosApi'
 import { useGeolocationStore } from '@/stores/geolocation';
 
@@ -71,6 +71,8 @@ const props = defineProps({
 let map = null // map
 let marker = null // marker choose position
 
+let blankMaker = null //for tooltip in route
+
 
 let searchTimeOut = null // time when search
 const dataHint = reactive([]) // Hint when search
@@ -126,6 +128,28 @@ watch(user_position, () => {
                     }
                 }).addTo(map);
                 controlDirect.hide()
+                controlDirect.on('routeselected', function (e) {
+                    if (blankMaker) {
+                        map.removeLayer(blankMaker)
+                        blankMaker = null
+                    }
+                    var route = e.route;
+                    let index = Math.floor(route.coordinates.length / 2)
+                    var distance = (e.route.summary.totalDistance / 1000).toFixed(2);
+                    var time = Math.round(e.route.summary.totalTime % 3600 / 60);
+                    var pop = `<div id="container">
+                            <div id="content">
+                                <div class="details-text">Khoảng cách : <b>`+ distance + ` Km</b></div>
+                                <div class="details-text">Thời gian : <b>`+ time + ` Min</b></div>
+                            </div>`;
+                    blankMaker = L.marker([route.coordinates[index].lat, route.coordinates[index].lng], { icon: BlankIcon }).bindTooltip(pop, {
+                        permanent: true,
+                        direction: 'top'
+                    });
+                    if (e.type === 'routeselected') {
+                        map.addLayer(blankMaker)
+                    }
+                });
             }
 
         }).catch(err => {
@@ -187,9 +211,32 @@ watch(props.destination, () => {
                     { color: '#9f9f9f', opacity: 1, weight: 5 }
 
                 ]
-            }
+            },
         }).addTo(map);
         controlDirect.hide()
+        controlDirect.on('routeselected', function (e) {
+            if (blankMaker) {
+                map.removeLayer(blankMaker)
+                blankMaker = null
+            }
+            var route = e.route;
+            let index = Math.floor(route.coordinates.length / 2)
+            var distance = (e.route.summary.totalDistance / 1000).toFixed(2);
+            var time = Math.round(e.route.summary.totalTime % 3600 / 60);
+            var pop = `<div id="container">
+                            <div id="content">
+                                <div class="details-text">Khoảng cách : <b>`+ distance + ` Km</b></div>
+                                <div class="details-text">Thời gian : <b>`+ time + ` Min</b></div>
+                            </div>`;
+            blankMaker = L.marker([route.coordinates[index].lat, route.coordinates[index].lng], { icon: BlankIcon }).bindTooltip(pop, {
+                permanent: true,
+                direction: 'top'
+            });
+            if (e.type === 'routeselected') {
+                map.addLayer(blankMaker)
+            }
+        });
+
     }
 
 }, { deep: true })
@@ -333,6 +380,8 @@ onMounted(() => {
                     <VBtn color="orange-lighten-2" variant="text" icon="mdi-close" v-on:click="() => {
                         map.removeControl(controlDirect)
                         controlDirect = null
+                        map.removeControl(blankMaker)
+                        blankMaker = null
                         itemMaker.forEach((item) => {
                             if (props.destination.name !== item.id) {
                                 map.addLayer(item)
@@ -387,7 +436,7 @@ onMounted(() => {
     height: 100%;
 
     .tools {
-        z-index: 1000 !important;
+        z-index: 450 !important;
         position: absolute;
         width: 100%;
         top: 0;

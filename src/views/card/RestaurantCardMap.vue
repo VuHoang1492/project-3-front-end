@@ -4,10 +4,14 @@ import PostCard from './PostCard.vue'
 import ReviewCard from './ReviewCard.vue'
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { followRestaurant, unfollowRestaurant, getPostByRestaurant } from '@/services/axios/api/api';
+import { useUserStore } from '@/stores/user'
+import { followRestaurant, unfollowRestaurant, getPostByRestaurant, getReviewBrRestaurant } from '@/services/axios/api/api';
+import { Roles } from '@/helpers/roles'
+
 
 const props = defineProps(['restaurant'])
 const router = useRouter()
+const userStore = useUserStore()
 
 const tab = ref(null)
 const follow = ref(false)
@@ -65,6 +69,16 @@ getPostByRestaurant(props.restaurant._id).then(res => {
     console.log(err);
 })
 
+const review = reactive([])
+getReviewBrRestaurant(props.restaurant._id).then(res => {
+    res.data.data.forEach(item => {
+        review.push(item)
+    })
+    console.log(review);
+}).catch(err => {
+    console.log(err);
+})
+
 </script>
 
 <template>
@@ -85,18 +99,21 @@ getPostByRestaurant(props.restaurant._id).then(res => {
         <v-card-text class="text-body-1">{{ props.restaurant.description }}</v-card-text>
         <v-divider></v-divider>
         <div class="d-flex mt-2">
-            <v-btn class=" w-30 mb-2" v-if="!follow" variant="text" v-on:click="handleFollow(props.restaurant._id)">
+            <v-btn v-if="userStore.user.role !== Roles.GUEST && userStore.user.role !== Roles.ADMIN && !follow"
+                class=" w-30 mb-2" variant="text" v-on:click="handleFollow(props.restaurant._id)">
                 Follow
                 <v-icon end icon="mdi-plus"></v-icon>
             </v-btn>
-            <v-btn class=" w-30 mb-2" v-if="follow" variant="text" v-on:click="handleUnfollow(props.restaurant._id)">
+            <v-btn v-if="userStore.user.role !== Roles.GUEST && userStore.user.role !== Roles.ADMIN && follow"
+                class=" w-30 mb-2" variant="text" v-on:click="handleUnfollow(props.restaurant._id)">
                 Unfollow
                 <v-icon end icon="mdi-heart" color="error"></v-icon>
             </v-btn>
-            <v-btn class="w-30 mb-2" variant="text" @click="() => { router.push('/review/create/restaurantId') }">Đánh giá
+            <v-btn v-if="userStore.user.role !== Roles.GUEST && userStore.user.role !== Roles.ADMIN" class="w-30 mb-2"
+                variant="text" @click="() => { router.push(`/review/create/${props.restaurant._id}`) }">Đánh giá
                 <v-icon end icon="mdi-pencil"></v-icon>
             </v-btn>
-            <v-btn class="w-30 mb-2" variant="text" @click="$emit('onD  irect')">Chỉ đường
+            <v-btn class="w-30 mb-2" variant="text" @click="$emit('onDirect')">Chỉ đường
                 <v-icon end icon="mdi-directions"></v-icon>
             </v-btn>
         </div>
@@ -111,9 +128,7 @@ getPostByRestaurant(props.restaurant._id).then(res => {
                     <PostCard v-for="item in post" :post="item"></PostCard>
                 </v-window-item>
                 <v-window-item value="review">
-                    <ReviewCard></ReviewCard>
-                    <ReviewCard></ReviewCard>
-                    <ReviewCard></ReviewCard>
+                    <ReviewCard v-for="item in review" :review="item"></ReviewCard>
                 </v-window-item>
             </v-window>
         </v-card-item>

@@ -85,11 +85,6 @@ const router = createRouter({
           component: () => import('../pages/admin/admin-form/restaurant-form.vue'),
         },
         {
-          path: 'admin/forms/:formId/report',
-          component: () => import('../pages/admin/admin-user/report-form.vue'),
-        }
-        ,
-        {
           path: 'notification',
           component: () => import('../pages/notification.vue'),
         }

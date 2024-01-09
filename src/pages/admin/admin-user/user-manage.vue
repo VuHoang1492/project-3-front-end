@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import User from './user.vue'
 import UserBlock from './user-block.vue'
-import UserReport from './user-report.vue'
 
 const tab = ref(null)
 </script>
@@ -10,9 +9,8 @@ const tab = ref(null)
 <template>
     <div class="pt-2">
         <v-tabs v-model="tab">
-            <v-tab width="30%" value="user">Quản lý người dùng</v-tab>
-            <v-tab width="30%" value="block">Danh sách bị block</v-tab>
-            <v-tab width="30%" value="report">Danh sách bị report</v-tab>
+            <v-tab width="40%" value="user">Quản lý người dùng</v-tab>
+            <v-tab width="40%" value="block">Danh sách bị block</v-tab>
         </v-tabs>
 
         <v-card-text>
@@ -22,9 +20,6 @@ const tab = ref(null)
                 </v-window-item>
                 <v-window-item value="block">
                     <UserBlock></UserBlock>
-                </v-window-item>
-                <v-window-item value="report">
-                    <UserReport></UserReport>
                 </v-window-item>
             </v-window>
         </v-card-text>
